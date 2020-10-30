@@ -1,0 +1,8 @@
+10/10/2020 v1.0 Intention Repeater MAX created.
+10/15/2020 v1.1 Optimized to run faster.
+10/16/2020 v1.2 Optimized further by removing benchmark loops in favor of a timer sentinel. This makes the clock more accurate and it runs faster.
+10/23/2020 v2.0 Converted to C++ which can be 2X faster and is more efficient. Will support this version from now on. Needs to be compiled with g++.
+10/24/2020 v2.1 Updated to use new PROCESS_STATEMENT used by Frank_Is_Not_My_Name on the Intention Repeater Forum.
+10/25/2020 v2.2 Removed extraneous variables and streamlined code.
+10/26/2020 v2.3 Updated to include frequency of run (kHz,MHz,GHz,THz,PHz) as well as a suffix (k,M,B,T,Q) for number of repetitions.
+10/27/2020 v2.4 Fixed bug with displaying extra characters at end on status update.
