@@ -1,6 +1,6 @@
 Windows 10 directions for compiling the Intention Repeater MAX v2.4 or greater.
 
-1) Save this sourcecode to your computer in a special folder: https://dev.intentionrepeater.com/cpp/intention_repeater_max.cpp
+1) Save this sourcecode in a special folder: intention_repeater_max.cpp
 
 If you have 64-Bit Windows:
 
