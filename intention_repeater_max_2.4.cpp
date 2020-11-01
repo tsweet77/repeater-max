@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v2.4 created by Thomas Sweet.
+    Intention Repeater MAX v2.5 created by Thomas Sweet.
     Created 10/27/2020 for C++.
 	Directions to compile on Windows: https://dev.intentionrepeater.com/cpp/Win_MAX_Compile_Directions.txt
 	To compile on Linux: g++ ./intention_repeater_max.cpp -O3 -o ./intention_repeater_max
@@ -43,7 +43,7 @@ std::string FormatTimeRun(int seconds_elapsed);
 
 #define ONE_MINUTE 60
 #define ONE_HOUR 3600
-#define PROCESS_STATEMENT " REGULATE AND INTEGRATE. IT IS DONE. OM."
+#define PROCESS_STATEMENT " ONE INFINITE CREATOR. REQUESTING AID FROM ALL BEINGS WHO ARE WILLING TO ASSIST. METATRON'S CUBE. ALL AVAILABLE BENEFICIAL ENERGY GRIDS, ORGONE AETHER RESONATORS, & ORGONE BUBBLES. CREATE MANIFESTATION ZONE. ASCENSION PYRAMID. USE EVERY AVAILABLE RESOURCE. MANIFEST ASAP. CREATE STRUCTURE. CANCEL DESTRUCTIVE OR FEARFUL INTENTIONS, OR INTENTIONS THAT CONFLICT WITH THE HIGHEST AND GREATEST GOOD OF THE USER. REGULATE AND BALANCE THE ENERGY. USE THE MOST EFFECTIVE PATH IN THE MOST EFFICIENT WAY. OPTIMAL ENERGY. INTEGRATE THE ENERGY IN THE MOST EFFECTIVE AND PLEASANT WAY POSSIBLE. PROCESS THE CHANGES. GUIDED BY THE USER'S HIGHER SELF. CONNECTED TO SOURCE. ENABLE AND UTILIZE THE SACRED HEART, QUANTUM HEART, AND QUANTUM MIND. MANIFEST ALL SPECIFIED INTENTIONS AND/OR DESIRES, OR BETTER. IF IT WOULD AID IN THE MANIFESTATION PROCESS, PLEASE HELP USER TO SENSE AND EMOTIONALLY FEEL WHAT IT WOULD BE LIKE TO ALREADY BE EXPERIENCING THEIR SPECIFIED INTENTIONS AND/OR DESIRES NOW. PLEASE HELP USER TO RAISE THEIR VIBRATION TO THE LEVEL REQUIRED TO MAKE THEIR SPECIFIED INTENTIONS AND/OR DESIRES MANIFEST. ASSIST THE USER WITH ACHIEVING OPTIMAL GUT/HEART/MIND COHERENCE WITH THEIR SPECIFIED INTENTIONS AND/OR DESIRES. IF IT WOULD BENEFIT THE USER, ASSIST THEM WITH CLEARING & RELEASING ANY/ALL INTERNAL OR EXTERNAL INTERFERENCE OR BLOCKAGES TO THEIR SPECIFIED INTENTIONS AND/OR DESIRES. IT IS DONE. NOW RETURN A PORTION OF THE LOVE/LIGHT RECEIVED AND ACTIVATED BACK INTO THE HIGHER REALMS OF CREATION. I LOVE YOU. OM."
 
 class comma_numpunct: public std::numpunct < char > {
     protected: virtual char do_thousands_sep() const {
@@ -132,7 +132,7 @@ int main(int argc, char ** argv) {
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v2.4 created by Thomas Sweet." << endl;
+    cout << "Intention Repeater MAX v2.5 created by Thomas Sweet." << endl;
     cout << "This software comes with no guarantees or warranty of any kind and is for entertainment purposes only." << endl;
     cout << "Press Ctrl-C to quit." << endl << endl;
 
@@ -162,7 +162,7 @@ int main(int argc, char ** argv) {
         }
         seconds += 1;
         runtime_formatted = FormatTimeRun(seconds);
-        std::cout << "[" + runtime_formatted + "]" << " (" << suffix(iterations) << "/" << suffix_hz(frequency_count) << "Hz): " << intention << "     \r" << std::flush;
+        std::cout << "[" + runtime_formatted + "]" << " (" << suffix(iterations) << "|" << suffix_hz(frequency_count) << "Hz): " << intention << "     \r" << std::flush;
 
         if (runtime_formatted == duration) {
 			std::cout << endl << std::flush;
