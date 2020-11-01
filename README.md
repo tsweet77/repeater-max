@@ -3,6 +3,7 @@ An optimized version of the Intention Repeater, written in C++.
 Repeats your intention up to 60+ Million times per second.
 
 You probably want intention_repeater_max.cpp
+Directions on how to compile on Windows: Win_MAX_Compile_Directions.txt
 
 Intention Repeater Website: https://www.intentionrepeater.com
 
