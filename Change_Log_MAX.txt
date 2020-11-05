@@ -6,3 +6,5 @@
 10/25/2020 v2.2 Removed extraneous variables and streamlined code.
 10/26/2020 v2.3 Updated to include frequency of run (kHz,MHz,GHz,THz,PHz) as well as a suffix (k,M,B,T,Q) for number of repetitions.
 10/27/2020 v2.4 Fixed bug with displaying extra characters at end on status update.
+11/5/2020 v2.5 Fixed some bugs.
+11/5/2020 v2.6 Enhanced performance by adding benchmark by Karteek Sheri.
