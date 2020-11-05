@@ -4,6 +4,8 @@ Repeats your intention up to 140+ Million times per second.
 
 You probably want intention_repeater_max.cpp
 
+Special thanks to Karteek Sheri for providing the benchmarking and performance enhancement.
+
 Directions on how to compile on Windows: Win_MAX_Compile_Directions.txt
 
 Intention Repeater Website: https://www.intentionrepeater.com
