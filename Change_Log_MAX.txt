@@ -8,3 +8,4 @@
 10/27/2020 v2.4 Fixed bug with displaying extra characters at end on status update.
 10/27/2020 v2.5 Fixed some bugs.
 11/5/2020 v2.6 Enhanced performance by adding benchmark by Karteek Sheri.
+11/7/2020 v3.0 Runtime flags added by Karteek Sheri. Intention multiplier added by Thomas Sweet.
