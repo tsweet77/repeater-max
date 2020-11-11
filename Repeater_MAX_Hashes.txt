@@ -1,0 +1,15 @@
+PowerShell Hashes
+
+PS E:\> Get-FileHash .\intention_repeater_max_3.0.exe | Format-List
+
+
+Algorithm : SHA256
+Hash      : ED4A6BE687A976318525C04BEE63603541A8C27F4B2A980CADD00833803571F3
+Path      : E:\Repeater\gitHub\repeater-max-main\intention_repeater_max_3.0.exe
+
+
+PS E:\> Get-FileHash .\intention_repeater_max_3.1.exe | Format-List
+
+Algorithm : SHA256
+Hash      : 5E5025FA142E30B5D25141D5D604934F45C009EF19101D1CFC42DE893B7D714D
+Path      : E:\Repeater\gitHub\repeater-max-main\intention_repeater_max_3.1.exe
