@@ -2,7 +2,7 @@ Windows 10 directions for compiling the Intention Repeater MAX v2.4 or greater.
 
 1) Save this sourcecode in a special folder: intention_repeater_max.cpp
 
-If you have 64-Bit Windows:
+v3.1+ requires this:
 
 	A) Install MinGW-W64:
 
@@ -31,7 +31,7 @@ If you have 64-Bit Windows:
 
 	You should then be able to double-click on the file in Windows: intention_repeater_max.exe
 
-If you have 32-Bit Windows:
+If you have 32-Bit Windows (for v3.0 or lower):
 
 	A) Install MinGW from here:
 
