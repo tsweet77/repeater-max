@@ -9,3 +9,4 @@
 10/27/2020 v2.5 Fixed some bugs.
 11/5/2020 v2.6 Enhanced performance by adding benchmark by Karteek Sheri.
 11/7/2020 v3.0 Runtime flags added by Karteek Sheri. Intention multiplier added by Thomas Sweet.
+11/11/2020 v3.1 Converted to using exponents. Fixed bug for iterations greater than 18.4 Quintillion.
