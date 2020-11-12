@@ -13,3 +13,10 @@ PS E:\> Get-FileHash .\intention_repeater_max_3.1.exe | Format-List
 Algorithm : SHA256
 Hash      : D551076011A40E14D48A4D9B8C09E8D6AD7F0971EA9F9CF7A1C43128DBBEB84F
 Path      : E:\Repeater\gitHub\repeater-max-main\intention_repeater_max_3.1.exe
+
+
+PS E:\> Get-FileHash .\intention_repeater_max_3.2.exe | Format-List
+
+Algorithm : SHA256
+Hash      : F4C7CFEB36C94FFC89F53870E65F9E9EB7F90B66B450977C1BBE9D075C966058
+Path      : E:\Repeater\gitHub\repeater-max-main\intention_repeater_max_3.2.exe
