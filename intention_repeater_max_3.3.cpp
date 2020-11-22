@@ -207,13 +207,13 @@ void print_help() {
 	cout << "	d) --suffix or -s" << endl;
 	cout << "	e) --help" << endl << endl;
 
-	cout << "--dur = Duration in HH:MM:SS format. Example 00:01:00 to run for one minute. Default = \"Until Stopped\"." << endl;
+	cout << "--dur = Duration in HH:MM:SS format. Example \"00:01:00\" to run for one minute. Default = \"Until Stopped\"." << endl;
 	cout << "--imem = Specify how many GB of System RAM to use. Default = 1.0. Higher amount produces a faster repeat rate, but takes longer to load into memory." << endl;
 	cout << "--intent = Intention. Default = Prompt the user for intention." << endl;
 	cout << "--suffix = Specify Hz or Exp. Exp = Exponent (ex. 1.313x10^15). Hz (ex. 1.313PHz). Default = Hz" << endl;
 	cout << "--help = Display this help." << endl << endl;
 
-	cout << "Example automated usage: intention_repeater_max.exe --suffix Hz --dur 00:01:00 --imem 4.0 --intent \"I am calm.\"" << endl;
+	cout << "Example automated usage: intention_repeater_max.exe --suffix Hz --dur \"00:01:00\" --imem 4.0 --intent \"I am calm.\"" << endl;
 	cout << "Default usage: intention_repeater_max.exe" << endl << endl;
 
 	cout << "gitHub Repository: https://github.com/tsweet77/repeater-max" << endl;
