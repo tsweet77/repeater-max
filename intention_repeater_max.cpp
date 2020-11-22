@@ -1,10 +1,10 @@
 /*
-    Intention Repeater MAX v3.2 created by Thomas Sweet.
+    Intention Repeater MAX v3.3 created by Thomas Sweet.
 	Performance benchmark, enhancement and flags by Karteek Sheri.
-    Created 11/12/2020 for C++.
+    Created 11/14/2020 for C++.
 	Directions to compile on Windows: https://github.com/tsweet77/repeater-max/blob/main/Win_MAX_Compile_Directions.txt
 	To compile on Linux (Requires 64-bit Compiler): g++ ./intention_repeater_max.cpp -O3 -o ./intention_repeater_max
-    Repeats your intention up to 100+ million times per second to make things happen.
+    Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
     Intention Repeater MAX is powered by a Servitor (20 Years / 2000+ hours in the making) [HR 6819 Black Hole System].
     Servitor Info: https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
@@ -23,6 +23,8 @@
 
 #include <math.h>
 
+#include <cmath>
+
 #include <iostream>
 
 #include <time.h>
@@ -37,8 +39,6 @@
 
 #include <locale.h>
 
-//#include <atomic>
-
 #include <cstdint>
 
 #include <vector>
@@ -46,6 +46,8 @@
 #include <iterator>
 
 #include <sstream>
+
+#include <algorithm>
 
 using namespace std;
 using namespace std::chrono;
@@ -67,7 +69,34 @@ class comma_numpunct: public std::numpunct < char > {
     }
 };
 
-#ifdef SCALED
+std::string display_suffix(std::string num, int power, std::string designator)
+{
+	std::string s;
+	if (designator == "Iterations")
+	{
+		char iterations_suffix_array[] = { ' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S' };
+		//cout << "Power: " << power << endl;
+		s = iterations_suffix_array[int(power/3)];
+	} else //designator == "Frequency"
+	{
+		char frequency_suffix_array[] = { ' ', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
+		//cout << "Power: " << power << endl;
+		s = frequency_suffix_array[int(power/3)];
+	}
+	
+	std::string str2 = num.substr (0, power % 3 + 1) + "." + num.substr (power % 3 + 1, 3) + s;
+	
+	/*
+	cout << endl;
+	cout << "Num: " << num << endl;
+	cout << "Power: " << power << endl;
+	cout << "str2: " << str2 << endl;
+	*/
+	
+	//cout << str2 << endl;
+	return str2;
+}
+
 static const char* short_scale[] = {
     "",
     "k",
@@ -133,7 +162,7 @@ const char* suffix_hz( unsigned long long int n, int decimals = 1)
 
   return s;
 }
-#endif
+
 std::string FormatTimeRun(int seconds_elapsed) {
      int hour, min, sec;
 
@@ -167,7 +196,7 @@ std::string FormatTimeRun(int seconds_elapsed) {
 }
 
 void print_help() {
-	cout << "Intention Repeater MAX v3.2 (c)2020 Thomas Sweet aka Anthro Teacher." << endl;
+	cout << "Intention Repeater MAX v3.3 (c)2020 Thomas Sweet aka Anthro Teacher." << endl;
 	cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
 	cout << "Intention multiplying by Thomas Sweet." << endl << endl;
 
@@ -175,14 +204,16 @@ void print_help() {
 	cout << "	a) --dur or -d" << endl;
 	cout << "	b) --imem or -m" << endl;
 	cout << "	c) --intent or -i" << endl;
-	cout << "	d) --help" << endl << endl;
+	cout << "	d) --suffix or -s" << endl;
+	cout << "	e) --help" << endl << endl;
 
-	cout << "--dur = Duration in HH:MM:SS format. Example 00:01:00 to run for one minute. Default = \"Until Stopped\"." << endl;
+	cout << "--dur = Duration in HH:MM:SS format. Example \"00:01:00\" to run for one minute. Default = \"Until Stopped\"." << endl;
 	cout << "--imem = Specify how many GB of System RAM to use. Default = 1.0. Higher amount produces a faster repeat rate, but takes longer to load into memory." << endl;
 	cout << "--intent = Intention. Default = Prompt the user for intention." << endl;
+	cout << "--suffix = Specify Hz or Exp. Exp = Exponent (ex. 1.313x10^15). Hz (ex. 1.313PHz). Default = Hz" << endl;
 	cout << "--help = Display this help." << endl << endl;
 
-	cout << "Example automated usage: intention_repeater_max.exe --dur 00:01:00 --imem 4.0 --intent \"I am calm.\"" << endl;
+	cout << "Example automated usage: intention_repeater_max.exe --suffix Hz --dur \"00:01:00\" --imem 4.0 --intent \"I am calm.\"" << endl;
 	cout << "Default usage: intention_repeater_max.exe" << endl << endl;
 
 	cout << "gitHub Repository: https://github.com/tsweet77/repeater-max" << endl;
@@ -241,7 +272,7 @@ std::string findsum(std::string a, std::string b){
 
 int main(int argc, char ** argv) {
 
-    std::string intention, process_intention,intention_value,duration,param_duration,param_intention,runtime_formatted, ref_rate="Average";
+    std::string intention, process_intention,intention_value,duration,param_duration,param_intention,runtime_formatted,ref_rate,suffix_value="HZ";
     unsigned long long int iterations = 0, cpu_benchmark_count = 0;
     int seconds = 0; unsigned long long multiplier = 0; float ram_size_value = 1;
     
@@ -267,6 +298,11 @@ int main(int argc, char ** argv) {
         }else if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--intent")){
 			
             param_intention = argv[i+1];
+			
+        }else if(!strcmp(argv[i], "-s") || !strcmp(argv[i], "--suffix")){
+			
+            suffix_value = argv[i+1];
+			std::transform(suffix_value.begin(), suffix_value.end(),suffix_value.begin(), ::toupper);
 		
         }else{
 			if(i == argc-1){
@@ -281,7 +317,7 @@ int main(int argc, char ** argv) {
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v3.2 created by Thomas Sweet." << endl;
+    cout << "Intention Repeater MAX v3.3 created by Thomas Sweet." << endl;
 	cout << "Performance benchmark, enhancements and flags by Karteek Sheri." << endl;
     cout << "Intention multiplier by Thomas Sweet." << endl;
 	cout << "This software comes with no guarantees or warranty of any kind and is for entertainment purposes only." << endl;
@@ -351,8 +387,16 @@ int main(int argc, char ** argv) {
             digits = iterations_string.length();
             
             freq_digits = iterations_string_freq.length();
-            std::cout<< "[" + runtime_formatted + "]" << " (" <<setprecision(3)<<fixed<<(stoull(iterations_string.substr(0,4)))/pow(10,3)<<"x10^"<<digits-1<<" / "<<(stoull(iterations_string_freq.substr(0,4))/pow(10,3))<<"x10^"<<freq_digits-1<<" Hz): "<<intention<<"     \r" << std::flush;
-            iterations =0;
+            
+			if (suffix_value == "EXP")
+			{
+				std::cout<< "[" + runtime_formatted + "]" << " (" <<setprecision(3)<<fixed<<(stoull(iterations_string.substr(0,4)))/pow(10,3)<<"x10^"<<digits-1<<" / "<<(stoull(iterations_string_freq.substr(0,4))/pow(10,3))<<"x10^"<<freq_digits-1<<" Hz): "<<intention<<"     \r" << std::flush;
+				//std::cout<< "[" + runtime_formatted + "]" << " (" <<setprecision(3)<<fixed<<(stoull(iterations_string.substr(0,4)))/pow(10,3)<<"x10^"<<digits-1<<" / "<<(stoull(iterations_string_freq.substr(0,4))/pow(10,3))<<"x10^"<<freq_digits-1<<" Hz): "<<intention<<"     \r" << std::flush;
+            } else //suffix_value = "HZ"
+			{
+				std::cout<< "[" + runtime_formatted + "]" << " (" <<display_suffix(iterations_string,digits-1,"Iterations")<<" / "<<display_suffix(iterations_string_freq,freq_digits-1,"Frequency")<<"Hz): "<<intention<<"     \r" << std::flush;
+			}
+			iterations =0;
         if (runtime_formatted == duration) {
 			std::cout << endl << std::flush;
             exit(0);
