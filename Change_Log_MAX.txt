@@ -12,3 +12,4 @@
 11/11/2020 v3.1 Converted to using exponents. Fixed bug for iterations greater than 18.4 Quintillion.
 11/12/2020 v3.2 Fixed bug for large numbers > 18.4 Quintillion using a String to hold values.
 11/14/2020 v3.3 Updated to allow selection of either suffix (like PHz) or exponent (like 10^15 Hz).
+5/9/2021 v3.4 Updated for exact clock. This version is slower than 3.3, but is more exact in the timer.
