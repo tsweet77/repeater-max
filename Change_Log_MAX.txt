@@ -14,3 +14,4 @@
 11/14/2020 v3.3 Updated to allow selection of either suffix (like PHz) or exponent (like 10^15 Hz).
 5/9/2021 v3.4 Updated for exact clock. This version is slower than 3.3, but is more exact in the timer.
 5/10/2021 v3.5 Added --timer flag for EXACT and INEXACT. Added --freq flag for specifying frequency of repeat. Added color options for text.
+5/10/2021 v3.6 Fixed so text color also works on Windows.
