@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v3.5 (c)2020-2021 by Thomas Sweet aka Anthro Teacher
+    Intention Repeater MAX v3.6 (c)2020-2021 by Thomas Sweet aka Anthro Teacher
     Performance benchmark, enhancement and flags by Karteek Sheri.
     Updated 5/10/2021 by Thomas Sweet aka Anthro Teacher.
     Directions to compile on Windows: https://github.com/tsweet77/repeater-max/blob/main/Win_MAX_Compile_Directions.txt
@@ -51,6 +51,10 @@
 
 #include <ostream>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace std;
 using namespace std::chrono;
 
@@ -60,29 +64,72 @@ using namespace std::chrono;
 //std::string PROCESS_STATEMENT = " REGULATE/INTEGRATE/OM";
 std::string PROCESS_STATEMENT = ""; //Put whatever you want here. This will repeat with each iteration.
 
+#ifndef _WIN32
 #ifndef _COLORS_
 #define _COLORS_
 
-#define TEXT_RESET "\x1B[0m"
-#define TEXT_DEFAULT "\x1B[39m"
-#define TEXT_BLACK "\x1B[30m"
-#define TEXT_RED "\x1B[31m"
-#define TEXT_GREEN "\x1B[32m"
-#define TEXT_YELLOW "\x1B[33m"
-#define TEXT_BLUE "\x1B[34m"
-#define TEXT_MAGENTA "\x1B[35m"
-#define TEXT_CYAN "\x1B[36m"
-#define TEXT_LIGHT_GRAY "\x1B[37m"
-#define TEXT_DARK_GRAY "\x1B[90m"
-#define TEXT_LIGHT_RED "\x1B[91m"
-#define TEXT_LIGHT_GREEN "\x1B[92m"
-#define TEXT_LIGHT_YELLOW "\x1B[93m"
-#define TEXT_LIGHT_BLUE "\x1B[94m"
-#define TEXT_LIGHT_MAGENTA "\x1B[95m"
-#define TEXT_LIGHT_CYAN "\x1B[96m"
-#define TEXT_WHITE "\x1B[97m"
+#define DEFAULT "\x1B[39m"
+#define BLACK "\x1B[30m"
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
+#define LIGHTGRAY "\x1B[37m"
+#define DARKGRAY "\x1B[90m"
+#define LIGHTRED "\x1B[91m"
+#define LIGHTGREEN "\x1B[92m"
+#define LIGHTYELLOW "\x1B[93m"
+#define LIGHTBLUE "\x1B[94m"
+#define LIGHTMAGENTA "\x1B[95m"
+#define LIGHTCYAN "\x1B[96m"
+#define WHITE "\x1B[97m"
 
 #endif // _COLORS_
+
+#else
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+enum Color { BLACK=0, BLUE=1, GREEN=2, CYAN=3, RED=4, MAGENTA=5, BROWN=6, LIGHTGRAY=7, DARKGRAY=8, LIGHTBLUE=9, LIGHTGREEN=10, LIGHTCYAN=11, LIGHTRED=12, LIGHTMAGENTA=13, YELLOW=14, WHITE=15 };
+
+const char* enum2str[] = {
+  "BLACK",
+  "BLUE",
+  "GREEN",
+  "CYAN",
+  "RED",
+  "MAGENTA",
+  "BROWN",
+  "LIGHTGRAY",
+  "DARKGRAY",
+  "LIGHTBLUE",
+  "LIGHTGREEN",
+  "LIGHTCYAN",
+  "LIGHTRED",
+  "LIGHTMAGENTA",
+  "YELLOW",
+  "WHITE"
+};
+
+#define BLACK			0
+#define BLUE			1
+#define GREEN			2
+#define CYAN			3
+#define RED				4
+#define MAGENTA			5
+#define BROWN			6
+#define LIGHTGRAY		7
+#define DARKGRAY		8
+#define LIGHTBLUE		9
+#define LIGHTGREEN		10
+#define LIGHTCYAN		11
+#define LIGHTRED		12
+#define LIGHTMAGENTA	13
+#define YELLOW			14
+#define WHITE			15
+
+#endif // _WIN32
 
 class comma_numpunct: public std::numpunct < char > {
     protected: virtual char do_thousands_sep() const {
@@ -237,29 +284,40 @@ std::string FormatTimeRun(int seconds_elapsed) {
 void print_color_help() {
     cout << "Color values for flag: --color [COLOR]" << endl << endl;
 
-    cout << TEXT_DEFAULT << "DEFAULT" << endl;
-    cout << TEXT_WHITE << "WHITE" << endl;
-    cout << TEXT_RED << "RED" << endl;
-    cout << TEXT_GREEN << "GREEN" << endl;
-    cout << TEXT_YELLOW << "YELLOW" << endl;
-    cout << TEXT_BLUE << "BLUE" << endl;
-    cout << TEXT_MAGENTA << "MAGENTA" << endl;
-    cout << TEXT_CYAN << "CYAN" << endl;
-    cout << TEXT_LIGHT_GRAY << "LIGHT_GRAY" << endl;
-    cout << TEXT_DARK_GRAY << "DARK_GRAY" << endl;
-    cout << TEXT_LIGHT_RED << "LIGHT_RED" << endl;
-    cout << TEXT_LIGHT_GREEN << "LIGHT_GREEN" << endl;
-    cout << TEXT_LIGHT_YELLOW << "LIGHT_YELLOW" << endl;
-    cout << TEXT_LIGHT_BLUE << "LIGHT_BLUE" << endl;
-    cout << TEXT_LIGHT_MAGENTA << "LIGHT_MAGENTA" << endl;
-    cout << TEXT_LIGHT_CYAN << "LIGHT_CYAN" << endl;
-    cout << TEXT_DEFAULT << endl;
+    #ifndef _WIN32
+    cout << WHITE << "WHITE" << endl;
+    cout << RED << "RED" << endl;
+    cout << GREEN << "GREEN" << endl;
+    cout << YELLOW << "YELLOW" << endl;
+    cout << BLUE << "BLUE" << endl;
+    cout << MAGENTA << "MAGENTA" << endl;
+    cout << CYAN << "CYAN" << endl;
+    cout << LIGHTGRAY << "LIGHTGRAY" << endl;
+    cout << DARKGRAY << "DARKGRAY" << endl;
+    cout << LIGHTRED << "LIGHTRED" << endl;
+    cout << LIGHTGREEN << "LIGHTGREEN" << endl;
+    cout << LIGHTYELLOW << "LIGHTYELLOW" << endl;
+    cout << LIGHTBLUE << "LIGHTBLUE" << endl;
+    cout << LIGHTMAGENTA << "LIGHTMAGENTA" << endl;
+    cout << LIGHTCYAN << "LIGHTCYAN" << endl;
+    cout << WHITE << endl;
+
+    #else // Not _Win32
+    
+    for(int k = 1; k <= 15; k++)
+  {
+    // pick the colorattribute k you want
+    SetConsoleTextAttribute(hConsole, k);
+    cout << enum2str[k] << endl;
+  }
+    SetConsoleTextAttribute(hConsole, WHITE);
+    #endif // _WIN32
 }
 
 void print_help() {
-    cout << "Intention Repeater MAX v3.5 (c)2020-2021 by Thomas Sweet aka Anthro Teacher." << endl;
+    cout << "Intention Repeater MAX v3.6 (c)2020-2021 by Thomas Sweet aka Anthro Teacher." << endl;
     cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
-    cout << "Intention multiplying by Thomas Sweet." << endl << endl;
+    cout << "Intention multiplying by Thomas Sweet aka Anthro Teacher." << endl << endl;
 
     cout << "Optional Flags:" << endl;
     cout << " a) --dur or -d" << endl;
@@ -406,29 +464,49 @@ int main(int argc, char ** argv)
     }
     unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 512);
 
+    #ifndef _WIN32
     //Set the terminal color based on the --color flag.
-    if (param_color == "DEFAULT") cout << TEXT_DEFAULT << std::flush;
-    else if (param_color == "BLACK") cout << TEXT_BLACK << std::flush;
-    else if (param_color == "RED") cout << TEXT_RED << std::flush;
-    else if (param_color == "GREEN") cout << TEXT_GREEN << std::flush;
-    else if (param_color == "YELLOW") cout << TEXT_YELLOW << std::flush;
-    else if (param_color == "BLUE") cout << TEXT_BLUE << std::flush;
-    else if (param_color == "MAGENTA") cout << TEXT_MAGENTA << std::flush;
-    else if (param_color == "CYAN") cout << TEXT_CYAN << std::flush;
-    else if (param_color == "LIGHT_GRAY") cout << TEXT_LIGHT_GRAY << std::flush;
-    else if (param_color == "DARK_GRAY") cout << TEXT_DARK_GRAY << std::flush;
-    else if (param_color == "LIGHT_RED") cout << TEXT_LIGHT_RED << std::flush;
-    else if (param_color == "LIGHT_GREEN") cout << TEXT_LIGHT_GREEN << std::flush;
-    else if (param_color == "LIGHT_YELLOW") cout << TEXT_LIGHT_YELLOW << std::flush;
-    else if (param_color == "LIGHT_BLUE") cout << TEXT_LIGHT_BLUE << std::flush;
-    else if (param_color == "LIGHT_MAGENTA") cout << TEXT_LIGHT_MAGENTA << std::flush;
-    else if (param_color == "LIGHT_CYAN") cout << TEXT_LIGHT_CYAN << std::flush;
-    else if (param_color == "WHITE") cout << TEXT_WHITE << std::flush;
+    if (param_color == "DEFAULT") cout << DEFAULT << std::flush;
+    else if (param_color == "BLACK") cout << BLACK << std::flush;
+    else if (param_color == "RED") cout << RED << std::flush;
+    else if (param_color == "GREEN") cout << GREEN << std::flush;
+    else if (param_color == "YELLOW") cout << YELLOW << std::flush;
+    else if (param_color == "BLUE") cout << BLUE << std::flush;
+    else if (param_color == "MAGENTA") cout << MAGENTA << std::flush;
+    else if (param_color == "CYAN") cout << CYAN << std::flush;
+    else if (param_color == "LIGHTGRAY") cout << LIGHTGRAY << std::flush;
+    else if (param_color == "DARK_GRAY") cout << DARKGRAY << std::flush;
+    else if (param_color == "LIGHTRED") cout << LIGHTRED << std::flush;
+    else if (param_color == "LIGHTGREEN") cout << LIGHTGREEN << std::flush;
+    else if (param_color == "LIGHTYELLOW") cout << LIGHTYELLOW << std::flush;
+    else if (param_color == "LIGHTBLUE") cout << LIGHTBLUE << std::flush;
+    else if (param_color == "LIGHTMAGENTA") cout << LIGHTMAGENTA << std::flush;
+    else if (param_color == "LIGHTCYAN") cout << LIGHTCYAN << std::flush;
+    else if (param_color == "WHITE") cout << WHITE << std::flush;
+    
+    #else
+    if (param_color == "BLACK") SetConsoleTextAttribute(hConsole, BLACK);
+    else if (param_color == "BLUE") SetConsoleTextAttribute(hConsole, BLUE);
+    else if (param_color == "GREEN") SetConsoleTextAttribute(hConsole, GREEN);
+    else if (param_color == "CYAN") SetConsoleTextAttribute(hConsole, CYAN);
+    else if (param_color == "RED") SetConsoleTextAttribute(hConsole, RED);
+    else if (param_color == "MAGENTA") SetConsoleTextAttribute(hConsole, MAGENTA);
+    else if (param_color == "BROWN") SetConsoleTextAttribute(hConsole, BROWN);
+    else if (param_color == "LIGHTGRAY") SetConsoleTextAttribute(hConsole, LIGHTGRAY);
+    else if (param_color == "DARKGRAY") SetConsoleTextAttribute(hConsole, DARKGRAY);
+    else if (param_color == "LIGHTBLUE") SetConsoleTextAttribute(hConsole, LIGHTBLUE);
+    else if (param_color == "LIGHTGREEN") SetConsoleTextAttribute(hConsole, LIGHTGREEN);
+    else if (param_color == "LIGHTCYAN") SetConsoleTextAttribute(hConsole, LIGHTCYAN);
+    else if (param_color == "LIGHTRED") SetConsoleTextAttribute(hConsole, LIGHTRED);
+    else if (param_color == "LIGHTMAGENTA") SetConsoleTextAttribute(hConsole, LIGHTMAGENTA);
+    else if (param_color == "YELLOW") SetConsoleTextAttribute(hConsole, YELLOW);
+    else if (param_color == "WHITE") SetConsoleTextAttribute(hConsole, WHITE);
+    #endif //Not Windows
 
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v3.5 (c)2020-2021 by Thomas Sweet aka Anthro Teacher." << endl;
+    cout << "Intention Repeater MAX v3.6 (c)2020-2021 by Thomas Sweet aka Anthro Teacher." << endl;
     cout << "This software comes with no guarantees or warranty of any kind and is for entertainment purposes only." << endl;
     cout << "Press Ctrl-C to quit." << endl << endl;
 
@@ -606,7 +684,11 @@ int main(int argc, char ** argv)
         } while (1);
     } // End repetition_period nonzero
 
-    cout << TEXT_DEFAULT << std::flush;
+    #ifndef _WIN32
+    cout << DEFAULT << std::flush;
+    #else
+    SetConsoleTextAttribute(hConsole, WHITE);
+    #endif
 
     return 0;
 }
