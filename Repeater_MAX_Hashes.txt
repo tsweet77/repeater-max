@@ -32,3 +32,6 @@ md5sum ./intention_repeater_max_3.4.exe
 
 md5sum ./intention_repeater_max_3.5.exe
 8ca19611b790c2e13aa7643d11a08389  ./intention_repeater_max_3.5.exe
+
+md5sum ./intention_repeater_max_3.6.exe
+ca453b412e34424376425007a9839bc5  ./intention_repeater_max_3.6.exe
