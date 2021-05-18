@@ -8,6 +8,10 @@ I recommend using clang++ for compiling on Linux.
 
 To compile on Linux: clang++ -O3 ./intention_repeater_max.cpp -o ./intention_repeater_max
 
+To edit code I recommend Visual Studio Code.
+
+To format the code, and beautify it, I recommend clang-format.
+
 Special thanks to Karteek Sheri for providing the benchmarking and performance enhancement.
 
 Special thanks to Mystic Minds for creating the Holo-Link framework that is used in v4.0.
