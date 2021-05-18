@@ -41,3 +41,9 @@ eea4dfa9f103d55afd14de359cb15032  ./intention_repeater_max_3.7.exe
 
 md5sum ./intention_repeater_max_4.0.exe
 097f2e091525195b930604626de23272  ./intention_repeater_max_4.0.exe
+
+md5sum ./intention_repeater_max_4.1.exe
+99c80c25fee4afa5c667b1986d003558  ./intention_repeater_max_4.1.exe
+
+md5sum ./intention_repeater_max.cpp
+deef670b80e6112d7d96f4154e49d777  ./intention_repeater_max.cpp
