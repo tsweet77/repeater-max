@@ -17,3 +17,4 @@
 5/10/2021 v3.6 Fixed so text color also works on Windows.
 5/11/2021 v3.7 Fixed color codes for Linux and Windows.
 5/17/2021 v4.0 Added Holo-Link functionality, created by Mystic Minds. Fixed some issues with the flags.
+5/18/2021 v4.1 Fixed some bugs with the flags, and some spelling errors.
