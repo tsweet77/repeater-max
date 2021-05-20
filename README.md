@@ -4,7 +4,9 @@ Repeats your intention up to 100+PHz.
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
 
-To compile g++ is faster (by a little), but I prefer clang++ because it has a cooler name.
+To compile, g++ is faster (by a little), but I prefer clang++ because it has a cooler name.
+
+Be sure to check out the clang-format utility to format your code to industry standards.
 
 To compile your code: clang++ -O3 ./intention_repeater_max.cpp -o ./intention_repeater_max
 
