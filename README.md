@@ -4,9 +4,11 @@ Repeats your intention up to 100+PHz.
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
 
-I recommend using clang++ for compiling on Linux.
+To compile g++ is faster (by a little), but I prefer clang++ because it has a cooler name.
 
-To compile on Linux: clang++ -O3 ./intention_repeater_max.cpp -o ./intention_repeater_max
+To compile your code: clang++ -O3 ./intention_repeater_max.cpp -o ./intention_repeater_max
+
+Please see the Example .cpp files for the basics of Multiplying Intention in memory, and to a file.
 
 To edit code I recommend Visual Studio Code.
 
