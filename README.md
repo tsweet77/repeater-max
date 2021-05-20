@@ -1,5 +1,8 @@
-An optimized version of the Intention Repeater, written in C++.
-Repeats your intention up to 100+PHz.
+# Intention Repeater Max
+
+Written in C++, this is the successor to the original Intention Repeater, written in Python.
+
+It repeats your intention up to 100+PHz, to make things happen.
 
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
@@ -8,7 +11,7 @@ To compile, g++ is faster (by a little), but I prefer clang++ because it has a c
 
 Be sure to check out the clang-format utility to format your code to industry standards.
 
-To compile your code: clang++ -O3 ./intention_repeater_max.cpp -o ./intention_repeater_max
+To compile your code: clang++ -O3 -static ./intention_repeater_max.cpp -o ./intention_repeater_max
 
 Please see the Example .cpp files for the basics of Multiplying Intention in memory, and to a file.
 
@@ -18,7 +21,7 @@ To format the code, and beautify it, I recommend clang-format.
 
 Special thanks to Karteek Sheri for providing the benchmarking and performance enhancement.
 
-Special thanks to Mystic Minds for creating the Holo-Link framework that is used in v4.0.
+Special thanks to Mystic Minds for creating the Holo-Link framework that is used in v4.0+.
 
 Intention Repeater Website: https://www.intentionrepeater.com
 
