@@ -15,3 +15,7 @@ Run INTENTIONS.TXT to repeat your intentions once per iteration.
 Run MYNEST.TXT to repeat your intentions a googol times per iteration.
 
 It's amazing that all these files are only 412kB in size.
+
+You can set the power level (1-100) by replacing the NEST- files in MYNEST.TXT with your desired level.
+
+For instance, replace "NEST-100.TXT" in MYNEST.TXT with "NEST-50.TXT" to lower to power level 50.
