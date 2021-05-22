@@ -6,7 +6,7 @@ This utility converts # of files, and intentions per file, into a Nested File St
 
 It can also create a .zip archive on the fly.
 
-Use: Repeater_Nesting_Utility.exe and follow the prompts.
+Use: Repeater_Nesting_Utility_Win64.exe and follow the prompts.
 
 NEST-FULLPOWER.ZIP contains 1000 NEST Files, plus a NEST-0.TXT (which references INTENTIONS.TXT).
 
