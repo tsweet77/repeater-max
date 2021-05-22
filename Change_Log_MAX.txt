@@ -19,3 +19,4 @@
 5/17/2021 v4.0 Added Holo-Link functionality, created by Mystic Minds. Fixed some issues with the flags.
 5/18/2021 v4.1 Fixed some bugs with the flags, and some spelling errors.
 5/21/2021 v5.0 Updated to use new boosting option, which uses Nesting Files NEST-1.TXT through NEST-100.TXT.
+5/21/2021 v5.1 Fixed some bugs.
