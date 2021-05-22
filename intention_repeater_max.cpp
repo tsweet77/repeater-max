@@ -1,9 +1,10 @@
 /*
-    Intention Repeater MAX v4.1 (c)2020-2021 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.1 (c)2020-2021 by Anthro Teacher aka Thomas Sweet.
     Performance benchmark, enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds.
     This implementation of the Holo-Link by Anthro Teacher.
-    Updated 5/17/2021 by Anthro Teacher.
+    Boosting through Nested Files by Anthro Teacher.
+    Updated 5/21/2021 by Anthro Teacher.
     To compile on Linux, I recommend clang++.
     Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
@@ -21,7 +22,6 @@
 #include <stdio.h>
 
 #ifndef _WIN32
-#include <bits/stdc++.h>
 #include <unistd.h>
 
 #endif
@@ -257,7 +257,6 @@ void print_color_help() {
   cout << CYAN << "CYAN" << endl;
   cout << WHITE << "WHITE" << endl;
   cout << LIGHTGRAY << "LIGHTGRAY" << endl;
-  cout << WHITE << endl;
 
 #else
 
@@ -266,8 +265,48 @@ void print_color_help() {
     SetConsoleTextAttribute(hConsole, k);
     cout << enum2str[k] << endl;
   }
-  SetConsoleTextAttribute(hConsole, WHITE);
 #endif // _WIN32
+}
+
+void create_nesting_files() {
+
+    std::fstream myfile;
+    std::string filename;
+    int current_filenum;
+    
+    myfile.open("NEST-1.TXT",ios::out);
+    
+    if(myfile.is_open())
+    {
+      for (int repnum=1; repnum<=10; repnum++)
+      {
+        myfile << "INTENTIONS.TXT\r\n";
+      }
+    }
+    
+		for (int filenum=1; filenum<=100; filenum++)
+		{
+			filename = "NEST-" + std::to_string(filenum) + ".TXT";
+			myfile.open(filename,ios::out);
+			
+			for (int repnum=1; repnum<=10; repnum++)
+			{
+				myfile << "NEST-" + std::to_string(filenum - 1) + ".TXT\r\n";
+			}
+			myfile.close();
+			current_filenum = filenum;
+		}
+    
+  cout << LIGHTBLUE << "Intention Repeater Nesting Files Written." << endl;
+      	
+	cout << "Be sure to have your intentions in the INTENTIONS.TXT file." << endl;
+  
+  cout << "To run with the nesting option, use --boostlevel 50, for example to use up to Nesting to 50 levels deep." << endl;
+  
+  cout << "--boostlevel valid values: 1 to 100." << endl;
+  
+  cout << "When using --boostlevel 50, for example, it will ignore the --intent, and use \"NEST-50.TXT\" for the intent instead." << endl << endl;
+  
 }
 
 void print_help() {
@@ -277,7 +316,7 @@ void print_help() {
   SetConsoleTextAttribute(hConsole, LIGHTYELLOW);
 #endif
 
-  cout << "Intention Repeater MAX v4.1 (c)2020-2021 by Anthro Teacher aka "
+  cout << LIGHTBLUE << "Intention Repeater MAX v5.1 (c)2020-2021 by Anthro Teacher aka "
           "Thomas Sweet."
        << endl;
   cout << "This utility repeats your intention millions of times per second, "
@@ -298,10 +337,12 @@ void print_help() {
   cout << " e) --timer or -t, example: --timer INEXACT" << endl;
   cout << " f) --freq or -f, example: --freq 1000" << endl;
   cout << " g) --color or -c, example: --color LIGHTBLUE" << endl;
-  cout << " h) --usehololink or -u" << endl;
-  cout << " i) --createhololinkfiles or -x" << endl;
-  cout << " j) --colorhelp or -n" << endl;
-  cout << " k) --help or -h" << endl << endl;
+  cout << " h) --boostlevel or -b, example: --boostlevel 100" << endl;
+  cout << " i) --createnestingfiles or -p, example: --createnestingfiles" << endl;
+  cout << " j) --usehololink or -u" << endl;
+  cout << " k) --createhololinkfiles or -x" << endl;
+  cout << " l) --colorhelp or -n" << endl;
+  cout << " m) --help or -h" << endl << endl;
 
   cout << "--dur = Duration in HH:MM:SS format. Default = Run until stopped "
           "manually."
@@ -328,6 +369,9 @@ void print_help() {
   cout << "--colorhelp = List and show all available colors for text using the "
           "option --color."
        << endl;
+  cout << "--createnestingfiles = Create the NEST- files required for boosting." << endl;
+  cout << "--boostlevel = Set the level to boost the power (1-100). Use --createnestingfiles before using --boostlevel." << endl;
+  
   cout << "--help = Display this help." << endl << endl;
 
   cout << "Example usage:" << endl;
@@ -342,6 +386,7 @@ void print_help() {
           "--suffix EXP --dur 00:01:00 --imem 4.0 --intent \"I am calm.\""
        << endl
        << endl;
+       
   cout << "Make sure to create your INTENTIONS.TXT file, in this folder, with "
           "your intentions, before running #2 above."
        << endl;
@@ -350,14 +395,22 @@ void print_help() {
        << endl
        << endl;
 
+  cout << "Example usage with Nesting Files:" << endl;
+  cout << "1) intention_repeater_max.exe --createnestingfiles" << endl;
+  cout << "2) intention_repeater_max.exe --color LIGHTBLUE --dur 00:01:00 --imem 4.0 --boostlevel 5" << endl << endl;
+  
+  cout << "Make sure to create your INTENTIONS.TXT file, in this folder, with "
+          "your intentions, and the Nesting Files before running #2 above."
+       << endl << endl;
+  
   cout << "gitHub Repository: https://github.com/tsweet77/repeater-max" << endl;
   cout << "Forum: https://forums.intentionrepeater.com" << endl;
   cout << "Website: https://www.intentionrepeater.com" << endl;
 
 #ifndef _WIN32
-  cout << WHITE;
+  cout << LIGHTBLUE;
 #else
-  SetConsoleTextAttribute(hConsole, WHITE);
+  SetConsoleTextAttribute(hConsole, LIGHTBLUE);
 #endif
 }
 
@@ -599,14 +652,14 @@ void create_hololink_files() {
   cout << "When using --usehololink, the option --intent, will be ignored, and "
           "INTENTIONS.TXT will be used instead."
        << endl;
-  cout << GREEN << "Good Luck!" << WHITE << endl;
+  cout << GREEN << "Good Luck!" << endl;
 }
 
 int main(int argc, char **argv) {
   std::string intention, PROCESS_STATEMENT, process_intention, intention_value,
-      duration, param_duration, param_intention, param_intention_2, param_timer,
+      duration, param_duration, param_intention, param_intention_2, param_timer, param_boostlevel,
       param_freq, param_color, param_usehololink, runtime_formatted, ref_rate,
-      suffix_value = "HZ";
+      suffix_value = "HZ", HSUPLINK_FILE;
   unsigned long long int iterations = 0, multiplier = 0;
   int seconds = 0, frequency_int = 0;
   float ram_size_value = 1;
@@ -616,9 +669,11 @@ int main(int argc, char **argv) {
   param_timer = "INEXACT";
   param_freq = "0";
   param_intention = "";
-  param_color = "WHITE";
+  param_color = "LIGHTBLUE";
   param_usehololink = "NO";
+  param_boostlevel = "0";
   PROCESS_STATEMENT = "";
+  HSUPLINK_FILE = "HSUPLINK.TXT";
 
   for (int i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")) {
@@ -633,11 +688,19 @@ int main(int argc, char **argv) {
       param_timer = argv[i + 1];
     } else if (!strcmp(argv[i], "-m") || !strcmp(argv[i], "--imem")) {
       ram_size_value = atof(argv[i + 1]);
+
+    } else if (!strcmp(argv[i], "-b") || !strcmp(argv[i], "--boostlevel")) {
+      param_boostlevel = argv[i + 1];
+      
+    } else if (!strcmp(argv[i], "-p") || !strcmp(argv[i], "--createnestingfiles")) {
+      create_nesting_files();
+      exit(EXIT_SUCCESS);
+
     } else if (!strcmp(argv[i], "-i") || !strcmp(argv[i], "--intent")) {
       param_intention_2 = argv[i + 1];
 
       if (!strcmp(argv[i], "-u") || !strcmp(argv[i], "--usehololink")) {
-        param_intention = "INTENTIONS.TXT";
+        param_intention = HSUPLINK_FILE;
       } else {
         param_intention = param_intention_2;
       }
@@ -659,11 +722,14 @@ int main(int argc, char **argv) {
       std::transform(suffix_value.begin(), suffix_value.end(),
                      suffix_value.begin(), ::toupper);
     }
-    //++i;
   }
 
   if (param_usehololink == "YES") {
-    param_intention = "INTENTIONS.TXT";
+    param_intention = HSUPLINK_FILE;
+  }
+  
+  if (param_boostlevel != "0") {
+    param_intention = "NEST-" + param_boostlevel + ".TXT";
   }
 
   unsigned long long int INTENTION_MULTIPLIER =
@@ -744,7 +810,7 @@ int main(int argc, char **argv) {
   std::locale comma_locale(std::locale(), new comma_numpunct());
   std::cout.imbue(comma_locale);
 
-  cout << "Intention Repeater MAX v4.1 (c)2020-2021 by Anthro Teacher aka "
+  cout << "Intention Repeater MAX v5.1 (c)2020-2021 by Anthro Teacher aka "
           "Thomas Sweet."
        << endl;
   cout << "Performance benchmark, exponents and flags by Karteek Sheri."
@@ -752,10 +818,10 @@ int main(int argc, char **argv) {
   cout << "Holo-Link framework originally created by Mystic Minds. This "
           "implementation by Anthro Teacher."
        << endl;
-  cout << "Intention multiplying by Anthro Teacher." << endl;
+  cout << "Boosting through Nested Files and Intention Multiplying created by Anthro Teacher." << endl;
 
   if (param_usehololink == "YES") {
-    param_intention = "INTENTIONS.TXT";
+    param_intention = HSUPLINK_FILE;
     cout << "USING HOLO-LINK." << endl << endl;
   }
 
