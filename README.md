@@ -11,7 +11,7 @@ To compile, g++ is faster (by a little), but I prefer clang++ because it has a c
 
 Be sure to check out the clang-format utility to format your code to industry standards.
 
-To compile your code: clang++ -O3 -static ./intention_repeater_max.cpp -o ./intention_repeater_max
+To compile your code: clang++ -O3 -Wall -static ./intention_repeater_max.cpp -o ./intention_repeater_max
 
 Please see the Example .cpp files for the basics of Multiplying Intention in memory, and to a file.
 
@@ -22,6 +22,8 @@ To format the code, and beautify it, I recommend clang-format.
 Special thanks to Karteek Sheri for providing the benchmarking and performance enhancement.
 
 Special thanks to Mystic Minds for creating the Holo-Link framework that is used in v4.0+.
+
+# Nesting Files Creation Utility: https://github.com/tsweet77/nesting-files-creation-utility
 
 Intention Repeater Website: https://www.intentionrepeater.com
 
