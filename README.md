@@ -2,6 +2,8 @@
 
 Written in C++, this is the successor to the original Intention Repeater, written in Python.
 
+The code, and the Servitor, were created by Anthro Teacher, aka Thomas Sweet.
+
 It repeats your intention up to 100+PHz, to make things happen.
 
 You probably want intention_repeater_max.cpp if you are on Linux,
