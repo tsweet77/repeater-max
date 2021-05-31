@@ -965,7 +965,7 @@ int main(int argc, char **argv)
                 end = std::chrono::high_resolution_clock::now();
                 while ((std::chrono::duration_cast<std::chrono::seconds>(end - start).count() != 1))
                 {
-                    for (int i = 0; i < cpu_benchmark_count; ++i)
+                    for (unsigned long long int i = 0; i < cpu_benchmark_count; ++i)
                     {
                         process_intention = intention_value; // This is the Intention Repeater call that
                                                              // actually does the work with the Servitor.
