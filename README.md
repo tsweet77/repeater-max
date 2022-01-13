@@ -17,7 +17,7 @@ To compile your code: clang++ -O3 -Wall -static ./intention_repeater_max.cpp -o 
 
 Please see the Example .cpp files for the basics of Multiplying Intention in memory, and to a file.
 
-To edit code I recommend Geany.
+To edit code I recommend Visual Studio Code.
 
 To format the code, and beautify it, I recommend clang-format.
 
