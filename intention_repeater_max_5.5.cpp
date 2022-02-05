@@ -395,13 +395,13 @@ void print_help()
     cout << "--boostlevel = Set the level to boost the power (1-100). Use --createnestingfiles before using "
             "--boostlevel."
          << endl;
-    cout << "--amplify = Amplification Level. Default = 1000000." << endl;
+    cout << "--amplify = Amplification Level. Default = 1000000000." << endl;
 
     cout << "--help = Display this help." << endl
          << endl;
 
     cout << "Example usage:" << endl;
-    cout << "intention_repeater_max.exe --dur \"00:01:00\" --imem 4.0 --intent \"I am Love.\" --amplify 1000000"
+    cout << "intention_repeater_max.exe --dur \"00:01:00\" --imem 4.0 --intent \"I am Love.\" --amplify 1000000000"
          << endl
          << endl;
 
@@ -665,7 +665,7 @@ int main(int argc, char **argv)
     std::string intention, PROCESS_STATEMENT, process_intention, intention_value, duration, param_duration,
         param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
         param_amplification, runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE;
-    unsigned long long int iterations = 0, multiplier = 0, amplification_int = 1000000, cpu_benchmark_count = 0;
+    unsigned long long int iterations = 0, multiplier = 0, amplification_int = 1000000000, cpu_benchmark_count = 0;
     int seconds = 0, frequency_int = 0;
     float ram_size_value = 1;
 
@@ -677,7 +677,7 @@ int main(int argc, char **argv)
     param_color = "LIGHTBLUE";
     param_usehololink = "NO";
     param_boostlevel = "0";
-    param_amplification = "1000000";
+    param_amplification = "1000000000";
     PROCESS_STATEMENT = "";
     HSUPLINK_FILE = "HSUPLINK.TXT";
 
