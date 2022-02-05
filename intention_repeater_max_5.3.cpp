@@ -1,21 +1,22 @@
 /*
     Intention Repeater MAX v5.3 (c)2020-2022 by Anthro Teacher aka Thomas Sweet.
     Performance benchmark, enhancement and flags by Karteek Sheri.
-    Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
+    Holo-Link framework created by Mystic Minds.
+    This implementation of the Holo-Link by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
     Updated 2/5/2022 by Anthro Teacher.
-    To compile on Linux, I recommend g++.
+    To compile on Linux, I recommend clang++.
     Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
     Intention Repeater MAX is powered by a Servitor (20 Years / 2000+ hours in
-    the making) [HR 6819 Black Hole System]. Servitor Info:
-    https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
+   the making) [HR 6819 Black Hole System]. Servitor Info:
+   https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
     Website: https://www.intentionrepeater.com/
     Forum: https://forums.intentionrepeater.com/
     Licensed under GNU General Public License v3.0
     This means you can modify, redistribute and even sell your own modified
-    software, as long as it's open source too and released under this same
-    license. https://choosealicense.com/licenses/gpl-3.0/
+   software, as long as it's open source too and released under this same
+   license. https://choosealicense.com/licenses/gpl-3.0/
 */
 
 #include <stdio.h>
@@ -71,7 +72,6 @@ using namespace std::chrono;
 
 #define ONE_MINUTE 60
 #define ONE_HOUR 3600
-#define INNER_ITERATIONS 1000000
 
 #ifndef _WIN32
 #ifndef _COLORS_
@@ -142,7 +142,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     std::string s;
     if (designator == "Iterations")
     {
-        char iterations_suffix_array[] = {' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S', 'O', 'D', 'U'};
+        char iterations_suffix_array[] = {' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S'};
         // cout << "Power: " << power << endl;
         s = iterations_suffix_array[int(power / 3)];
     }
@@ -158,7 +158,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     return str2;
 }
 
-static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S", "O", "D", "U"};
+static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S"};
 
 static const char *short_scale_hz[] = {"", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 
@@ -375,7 +375,7 @@ void print_help()
     cout << "--suffix = Specify whether to show regular (Hz) designator or "
             "scientific notation (Exp). Default = HZ."
          << endl;
-    cout << "--timer = Specify INEXACT or EXACT. Default = EXACT." << endl;
+    cout << "--timer = Specify INEXACT or EXACT. Default = INEXACT." << endl;
     cout << "--freq = Specify repetition frequency in Hz. Default = As fast as "
             "possible."
          << endl;
@@ -655,20 +655,10 @@ void create_hololink_files()
     cout << GREEN << "Good Luck!" << endl;
 }
 
-void repeat(std::string value_to_repeat)
-{
-    std::string process_intention;
-
-    for (int i = 1; i <= 1000; i++)
-    {
-        process_intention = value_to_repeat;
-    }
-}
-
 int main(int argc, char **argv)
 {
     std::string intention, PROCESS_STATEMENT, process_intention, intention_value, duration, param_duration,
-        param_intention, param_intention_2, param_boostlevel, param_freq, param_color, param_usehololink,
+        param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
         runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE;
     unsigned long long int iterations = 0, multiplier = 0;
     int seconds = 0, frequency_int = 0;
@@ -676,6 +666,7 @@ int main(int argc, char **argv)
 
     // parse command line arguments
     param_duration = "UNTIL STOPPED";
+    param_timer = "INEXACT";
     param_freq = "0";
     param_intention = "";
     param_color = "LIGHTBLUE";
@@ -702,7 +693,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-t") || !strcmp(argv[i], "--timer"))
         {
-            //Do Nothing. Kept for backwards compatibility. Always EXACT now.
+            param_timer = argv[i + 1];
         }
         else if (!strcmp(argv[i], "-m") || !strcmp(argv[i], "--imem"))
         {
@@ -905,49 +896,438 @@ int main(int argc, char **argv)
 
     if (param_freq == "0")
     {
-        do
+        if (param_timer == "EXACT")
         {
-            start = std::chrono::high_resolution_clock::now();
-            end = std::chrono::high_resolution_clock::now();
-            while ((chrono::duration_cast<chrono::seconds>(end - start).count() != 1))
+            do
             {
-                repeat(intention_value); // This is the Intention Repeater call that
-                                                        // actually does the work with the Servitor
-                                                        // [HR6819].
-
-                iterations+=INNER_ITERATIONS;
+                start = std::chrono::high_resolution_clock::now();
                 end = std::chrono::high_resolution_clock::now();
-            }
-            ++seconds;
-            runtime_formatted = FormatTimeRun(seconds);
-            iterations_string_freq = to_string(iterations * multiplier);
-            iterations_string = findsum(iterations_string, iterations_string_freq);
-            digits = iterations_string.length();
+                while ((chrono::duration_cast<chrono::seconds>(end - start).count() != 1))
+                {
+                    process_intention = intention_value; // This is the Intention Repeater call that
+                                                         // actually does the work with the Servitor
+                                                         // [HR6819].
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
 
-            freq_digits = iterations_string_freq.length();
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
 
-            if (suffix_value == "EXP")
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    iterations+=100;
+                    end = std::chrono::high_resolution_clock::now();
+                }
+                ++seconds;
+                runtime_formatted = FormatTimeRun(seconds);
+                iterations_string_freq = to_string(iterations * multiplier);
+                iterations_string = findsum(iterations_string, iterations_string_freq);
+                digits = iterations_string.length();
+
+                freq_digits = iterations_string_freq.length();
+
+                if (suffix_value == "EXP")
+                {
+                    std::cout << "[" + runtime_formatted + "]"
+                              << " (" << setprecision(3) << fixed
+                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
+                              << " Hz): " << intention << "     \r" << std::flush;
+                }
+                else // suffix_value = "HZ"
+                {
+                    std::cout << "[" + runtime_formatted + "]"
+                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
+                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                              << "Hz): " << intention << "     \r" << std::flush;
+                }
+                iterations = 0;
+                if (runtime_formatted == duration)
+                {
+                    std::cout << endl << std::flush;
+                    exit(EXIT_SUCCESS);
+                }
+            } while (1);
+        }
+        else // End param_timer = EXACT (6X slower, but 180X more accurate with
+             // variance [ms/sec] than INEXACT.)
+        {    // Begin param_timer = INEXACT
+            do
             {
-                std::cout << "[" + runtime_formatted + "]"
-                            << " (" << setprecision(3) << fixed
-                            << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                            << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
-                            << " Hz): " << intention << "     \r" << std::flush;
-            }
-            else // suffix_value = "HZ"
-            {
-                std::cout << "[" + runtime_formatted + "]"
-                            << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                            << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
-                            << "Hz): " << intention << "     \r" << std::flush;
-            }
-            iterations = 0;
-            if (runtime_formatted == duration)
-            {
-                std::cout << endl << std::flush;
-                exit(EXIT_SUCCESS);
-            }
-        } while (1);
+                // This code is to benchmark cpu iterations. By Karteek Sheri.
+                auto b_start = std::chrono::high_resolution_clock::now();
+                auto b_end = std::chrono::high_resolution_clock::now();
+                unsigned long long int cpu_benchmark_count = 0;
+
+                while ((std::chrono::duration_cast<std::chrono::seconds>(b_end - b_start).count() != 1))
+                {
+                    process_intention = intention_value; // The Intention Repeater Statement
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+                    process_intention = intention_value;
+
+                    ++cpu_benchmark_count;
+                    b_end = std::chrono::high_resolution_clock::now();
+                }
+                // Benchmark ends here
+                start = std::chrono::high_resolution_clock::now();
+                end = std::chrono::high_resolution_clock::now();
+                while ((std::chrono::duration_cast<std::chrono::seconds>(end - start).count() != 1))
+                {
+                    for (unsigned long long int i = 0; i < cpu_benchmark_count; ++i)
+                    {   
+                        process_intention = intention_value; // This is the Intention Repeater call that
+                                                             // actually does the work with the Servitor.
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+                        process_intention = intention_value;
+
+                        iterations+=100;
+                    }
+                    end = std::chrono::high_resolution_clock::now();
+                }
+                ++seconds;
+                runtime_formatted = FormatTimeRun(seconds);
+                iterations_string_freq = to_string(iterations * multiplier);
+                iterations_string = findsum(iterations_string, iterations_string_freq);
+                digits = iterations_string.length();
+
+                freq_digits = iterations_string_freq.length();
+
+                if (suffix_value == "EXP")
+                {
+                    std::cout << "[" + runtime_formatted + "]"
+                              << " (" << setprecision(3) << fixed
+                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
+                              << " Hz): " << intention << "     \r" << std::flush;
+                }
+                else // suffix_value = "HZ"
+                {
+                    std::cout << "[" + runtime_formatted + "]"
+                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
+                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                              << "Hz): " << intention << "     \r" << std::flush;
+                }
+                iterations = 0;
+                if (runtime_formatted == duration)
+                {
+                    std::cout << endl << std::flush;
+                    exit(EXIT_SUCCESS);
+                }
+            } while (1);
+        } // End param_timer INEXACT
     }
     else                           // End param_freq = 0
     {                              // Begin param_freq nonzero
