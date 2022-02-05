@@ -660,8 +660,8 @@ int main(int argc, char **argv)
     std::string intention, PROCESS_STATEMENT, process_intention, intention_value, duration, param_duration,
         param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
         param_amplification, runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE;
-    unsigned long long int iterations = 0, multiplier = 0;
-    int seconds = 0, frequency_int = 0, amplification_int = 1000000;
+    unsigned long long int iterations = 0, multiplier = 0, amplification_int = 1000000;
+    int seconds = 0, frequency_int = 0;
     float ram_size_value = 1;
 
     // parse command line arguments
@@ -955,7 +955,7 @@ int main(int argc, char **argv)
                 end = std::chrono::high_resolution_clock::now();
                 while ((chrono::duration_cast<chrono::seconds>(end - start).count() != 1))
                 {
-                    for (long int i = 0; i < amplification_int; i++)
+                    for (unsigned long long int i = 0; i < amplification_int; i++)
                     {
                         process_intention = intention_value; // This is the Intention Repeater call that
                                                              // actually does the work with the Servitor
