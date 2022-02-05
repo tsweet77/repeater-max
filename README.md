@@ -4,7 +4,7 @@ Written in C++, this is the successor to the original Intention Repeater, writte
 
 The code, and the Servitor, were created by Anthro Teacher, aka Thomas Sweet.
 
-It repeats your intention up to 100+PHz, to make things happen.
+It repeats your intention up to 10+EHz, to make things happen.
 
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
