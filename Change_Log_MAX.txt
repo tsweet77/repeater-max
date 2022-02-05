@@ -21,3 +21,4 @@
 5/21/2021 v5.0 Updated to use new boosting option, which uses Nesting Files NEST-1.TXT through NEST-100.TXT.
 5/21/2021 v5.1 Fixed some bugs.
 5/30/2021 v5.2 Now has Microsoft Style in coding, from clang-format v13, as well as fixed a variable from int to unsigned long long int.
+2/5/2022 v5.3 Added inner loop for faster run. Removed INEXACT running because now that's slower.
