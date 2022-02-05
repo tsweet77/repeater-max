@@ -1,23 +1,21 @@
 /*
-    Intention Repeater MAX v5.2 (c)2020-2021 by Anthro Teacher aka Thomas Sweet.
-    This only differs from v5.1 in that it is formatted by clang-format v13 with Microsoft style.
+    Intention Repeater MAX v5.3 (c)2020-2022 by Anthro Teacher aka Thomas Sweet.
     Performance benchmark, enhancement and flags by Karteek Sheri.
-    Holo-Link framework created by Mystic Minds.
-    This implementation of the Holo-Link by Anthro Teacher.
+    Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
-    Updated 5/30/2021 by Anthro Teacher.
-    To compile on Linux, I recommend clang++.
+    Updated 2/5/2022 by Anthro Teacher.
+    To compile on Linux, I recommend g++.
     Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
     Intention Repeater MAX is powered by a Servitor (20 Years / 2000+ hours in
-   the making) [HR 6819 Black Hole System]. Servitor Info:
-   https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
+    the making) [HR 6819 Black Hole System]. Servitor Info:
+    https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
     Website: https://www.intentionrepeater.com/
     Forum: https://forums.intentionrepeater.com/
     Licensed under GNU General Public License v3.0
     This means you can modify, redistribute and even sell your own modified
-   software, as long as it's open source too and released under this same
-   license. https://choosealicense.com/licenses/gpl-3.0/
+    software, as long as it's open source too and released under this same
+    license. https://choosealicense.com/licenses/gpl-3.0/
 */
 
 #include <stdio.h>
@@ -73,6 +71,7 @@ using namespace std::chrono;
 
 #define ONE_MINUTE 60
 #define ONE_HOUR 3600
+#define INNER_ITERATIONS 1000000
 
 #ifndef _WIN32
 #ifndef _COLORS_
@@ -159,7 +158,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     return str2;
 }
 
-static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S"};
+static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S", "O", "D", "U"};
 
 static const char *short_scale_hz[] = {"", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 
@@ -292,7 +291,6 @@ void create_nesting_files()
 
     std::fstream myfile;
     std::string filename;
-    int current_filenum;
 
     myfile.open("NEST-1.TXT", ios::out);
 
@@ -314,7 +312,6 @@ void create_nesting_files()
             myfile << "NEST-" + std::to_string(filenum - 1) + ".TXT\r\n";
         }
         myfile.close();
-        current_filenum = filenum;
     }
 
     cout << LIGHTBLUE << "Intention Repeater Nesting Files Written." << endl;
@@ -341,7 +338,7 @@ void print_help()
 #endif
 
     cout << LIGHTBLUE
-         << "Intention Repeater MAX v5.2 (c)2020-2021 by Anthro Teacher aka "
+         << "Intention Repeater MAX v5.3 (c)2020-2022 by Anthro Teacher aka "
             "Thomas Sweet."
          << endl;
     cout << "This utility repeats your intention millions of times per second, "
@@ -378,7 +375,7 @@ void print_help()
     cout << "--suffix = Specify whether to show regular (Hz) designator or "
             "scientific notation (Exp). Default = HZ."
          << endl;
-    cout << "--timer = Specify INEXACT or EXACT. Default = INEXACT." << endl;
+    cout << "--timer = Specify INEXACT or EXACT. Default = EXACT." << endl;
     cout << "--freq = Specify repetition frequency in Hz. Default = As fast as "
             "possible."
          << endl;
@@ -658,10 +655,20 @@ void create_hololink_files()
     cout << GREEN << "Good Luck!" << endl;
 }
 
+void repeat(std::string value_to_repeat)
+{
+    std::string process_intention;
+
+    for (int i = 1; i <= 1000; i++)
+    {
+        process_intention = value_to_repeat;
+    }
+}
+
 int main(int argc, char **argv)
 {
     std::string intention, PROCESS_STATEMENT, process_intention, intention_value, duration, param_duration,
-        param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
+        param_intention, param_intention_2, param_boostlevel, param_freq, param_color, param_usehololink,
         runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE;
     unsigned long long int iterations = 0, multiplier = 0;
     int seconds = 0, frequency_int = 0;
@@ -669,7 +676,6 @@ int main(int argc, char **argv)
 
     // parse command line arguments
     param_duration = "UNTIL STOPPED";
-    param_timer = "INEXACT";
     param_freq = "0";
     param_intention = "";
     param_color = "LIGHTBLUE";
@@ -696,7 +702,7 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i], "-t") || !strcmp(argv[i], "--timer"))
         {
-            param_timer = argv[i + 1];
+            //Do Nothing. Kept for backwards compatibility. Always EXACT now.
         }
         else if (!strcmp(argv[i], "-m") || !strcmp(argv[i], "--imem"))
         {
@@ -837,7 +843,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v5.2 (c)2020-2021 by Anthro Teacher aka "
+    cout << "Intention Repeater MAX v5.3 (c)2020-2022 by Anthro Teacher aka "
             "Thomas Sweet."
          << endl;
     cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
@@ -899,111 +905,49 @@ int main(int argc, char **argv)
 
     if (param_freq == "0")
     {
-        if (param_timer == "EXACT")
+        do
         {
-            do
+            start = std::chrono::high_resolution_clock::now();
+            end = std::chrono::high_resolution_clock::now();
+            while ((chrono::duration_cast<chrono::seconds>(end - start).count() != 1))
             {
-                start = std::chrono::high_resolution_clock::now();
+                repeat(intention_value); // This is the Intention Repeater call that
+                                                        // actually does the work with the Servitor
+                                                        // [HR6819].
+
+                iterations+=INNER_ITERATIONS;
                 end = std::chrono::high_resolution_clock::now();
-                while ((chrono::duration_cast<chrono::seconds>(end - start).count() != 1))
-                {
-                    process_intention = intention_value; // This is the Intention Repeater call that
-                                                         // actually does the work with the Servitor
-                                                         // [HR6819].
-                    ++iterations;
-                    end = std::chrono::high_resolution_clock::now();
-                }
-                ++seconds;
-                runtime_formatted = FormatTimeRun(seconds);
-                iterations_string_freq = to_string(iterations * multiplier);
-                iterations_string = findsum(iterations_string, iterations_string_freq);
-                digits = iterations_string.length();
+            }
+            ++seconds;
+            runtime_formatted = FormatTimeRun(seconds);
+            iterations_string_freq = to_string(iterations * multiplier);
+            iterations_string = findsum(iterations_string, iterations_string_freq);
+            digits = iterations_string.length();
 
-                freq_digits = iterations_string_freq.length();
+            freq_digits = iterations_string_freq.length();
 
-                if (suffix_value == "EXP")
-                {
-                    std::cout << "[" + runtime_formatted + "]"
-                              << " (" << setprecision(3) << fixed
-                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
-                              << " Hz): " << intention << "     \r" << std::flush;
-                }
-                else // suffix_value = "HZ"
-                {
-                    std::cout << "[" + runtime_formatted + "]"
-                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
-                              << "Hz): " << intention << "     \r" << std::flush;
-                }
-                iterations = 0;
-                if (runtime_formatted == duration)
-                {
-                    std::cout << endl << std::flush;
-                    exit(EXIT_SUCCESS);
-                }
-            } while (1);
-        }
-        else // End param_timer = EXACT (6X slower, but 180X more accurate with
-             // variance [ms/sec] than INEXACT.)
-        {    // Begin param_timer = INEXACT
-            do
+            if (suffix_value == "EXP")
             {
-                // This code is to benchmark cpu iterations. By Karteek Sheri.
-                auto b_start = std::chrono::high_resolution_clock::now();
-                auto b_end = std::chrono::high_resolution_clock::now();
-                unsigned long long int cpu_benchmark_count = 0;
-
-                while ((std::chrono::duration_cast<std::chrono::seconds>(b_end - b_start).count() != 1))
-                {
-                    process_intention = intention_value; // The Intention Repeater Statement
-                    ++cpu_benchmark_count;
-                    b_end = std::chrono::high_resolution_clock::now();
-                }
-                // Benchmark ends here
-                start = std::chrono::high_resolution_clock::now();
-                end = std::chrono::high_resolution_clock::now();
-                while ((std::chrono::duration_cast<std::chrono::seconds>(end - start).count() != 1))
-                {
-                    for (unsigned long long int i = 0; i < cpu_benchmark_count; ++i)
-                    {
-                        process_intention = intention_value; // This is the Intention Repeater call that
-                                                             // actually does the work with the Servitor.
-                        ++iterations;
-                    }
-                    end = std::chrono::high_resolution_clock::now();
-                }
-                ++seconds;
-                runtime_formatted = FormatTimeRun(seconds);
-                iterations_string_freq = to_string(iterations * multiplier);
-                iterations_string = findsum(iterations_string, iterations_string_freq);
-                digits = iterations_string.length();
-
-                freq_digits = iterations_string_freq.length();
-
-                if (suffix_value == "EXP")
-                {
-                    std::cout << "[" + runtime_formatted + "]"
-                              << " (" << setprecision(3) << fixed
-                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
-                              << " Hz): " << intention << "     \r" << std::flush;
-                }
-                else // suffix_value = "HZ"
-                {
-                    std::cout << "[" + runtime_formatted + "]"
-                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
-                              << "Hz): " << intention << "     \r" << std::flush;
-                }
-                iterations = 0;
-                if (runtime_formatted == duration)
-                {
-                    std::cout << endl << std::flush;
-                    exit(EXIT_SUCCESS);
-                }
-            } while (1);
-        } // End param_timer INEXACT
+                std::cout << "[" + runtime_formatted + "]"
+                            << " (" << setprecision(3) << fixed
+                            << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                            << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
+                            << " Hz): " << intention << "     \r" << std::flush;
+            }
+            else // suffix_value = "HZ"
+            {
+                std::cout << "[" + runtime_formatted + "]"
+                            << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
+                            << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                            << "Hz): " << intention << "     \r" << std::flush;
+            }
+            iterations = 0;
+            if (runtime_formatted == duration)
+            {
+                std::cout << endl << std::flush;
+                exit(EXIT_SUCCESS);
+            }
+        } while (1);
     }
     else                           // End param_freq = 0
     {                              // Begin param_freq nonzero
