@@ -158,7 +158,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     return str2;
 }
 
-static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S"};
+static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S", "O", "D", "U"};
 
 static const char *short_scale_hz[] = {"", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 
