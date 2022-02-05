@@ -142,7 +142,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     std::string s;
     if (designator == "Iterations")
     {
-        char iterations_suffix_array[] = {' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S'};
+        char iterations_suffix_array[] = {' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S', 'O', 'D', 'U'};
         // cout << "Power: " << power << endl;
         s = iterations_suffix_array[int(power / 3)];
     }
