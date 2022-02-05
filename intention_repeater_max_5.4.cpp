@@ -749,7 +749,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "-a") || !strcmp(argv[i], "--amplification"))
         {
             param_amplification = argv[i + 1];
-            amplification_int = std::stoi(param_amplification);
+            amplification_int = std::stoll(param_amplification);
         }
     }
 
