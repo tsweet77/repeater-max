@@ -23,3 +23,4 @@
 5/30/2021 v5.2 Now has Microsoft Style in coding, from clang-format v13, as well as fixed a variable from int to unsigned long long int.
 2/5/2022 v5.3 Added inner repeating 1M times.
 2/5/2022 v5.4 Added amplification option.
+2/5/2022 v5.5 Check benchmark to make sure amplification value isn't too large.
