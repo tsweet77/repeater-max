@@ -338,7 +338,7 @@ void print_help()
 #endif
 
     cout << LIGHTBLUE
-         << "Intention Repeater MAX v5.6 (c)2020-2022 by Anthro Teacher aka "
+         << "Intention Repeater MAX v5.7 (c)2020-2022 by Anthro Teacher aka "
             "Thomas Sweet."
          << endl;
     cout << "This utility repeats your intention millions of times per second, "
@@ -863,7 +863,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v5.6 (c)2020-2022 by Anthro Teacher aka "
+    cout << "Intention Repeater MAX v5.7 (c)2020-2022 by Anthro Teacher aka "
             "Thomas Sweet."
          << endl;
     cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
