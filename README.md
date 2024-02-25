@@ -11,6 +11,8 @@ It repeats your intention up to 20+PHz, to make things happen.
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
 
+For MacOS 10.9+ you can get MacOS_intention_repeater_max_5.7.tar
+
 To compile, g++ is faster (by a little), but I prefer clang++ because it has a cooler name.
 
 Be sure to check out the clang-format utility to format your code to industry standards.
