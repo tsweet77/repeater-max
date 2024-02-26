@@ -17,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Repeater compile
-      run: g++ -O3 intention_repeater_max_5.7.cpp
+#      run: g++ -O3 intention_repeater_max_5.7.cpp
     - name: Make swap
-      run: (sudo fallocate -l 14G /swapfile) && (sudo chmod 600 /swapfile) && (sudo mkswap /swapfile) && (sudo swapon /swapfile)
+ #     run: (sudo fallocate -l 14G /swapfile) && (sudo chmod 600 /swapfile) && (sudo mkswap /swapfile) && (sudo swapon /swapfile)
     - name: Repeater run
-      run: ./a.out --dur 05:57:00 --imem 20 --intent "With Source, I am a 5D Light Being full of bliss."
+  #    run: ./a.out --dur 05:57:00 --imem 20 --intent "With Source, I am a 5D Light Being full of bliss."
