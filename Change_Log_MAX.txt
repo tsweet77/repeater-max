@@ -26,3 +26,4 @@
 2/5/2022 v5.5 Check benchmark to make sure amplification value isn't too large. Added amplify option to the help menu.
 2/8/2022 v5.6 Added --restevery and --restfor options to allow for resting in between running.
 6/26/2022 v5.7 Clear extra character showing up during resting option for large imem.
+3/24/2024 v5.8 Fixed "intention_value = intention + PROCESS_STATEMENT" instead of "intention_value = intention_value + PROCESS_STATEMENT" (Line 915).
