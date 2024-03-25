@@ -27,3 +27,4 @@
 2/8/2022 v5.6 Added --restevery and --restfor options to allow for resting in between running.
 6/26/2022 v5.7 Clear extra character showing up during resting option for large imem.
 3/24/2024 v5.8 Fixed "intention_value = intention + PROCESS_STATEMENT" instead of "intention_value = intention_value + PROCESS_STATEMENT" (Line 915).
+3/25/2024 v5.9 Updated to prevent compiler from optimizing out the repeater process.
