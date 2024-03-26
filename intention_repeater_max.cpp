@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.11 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.12 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -23,6 +23,12 @@
 #include <unistd.h>
 #endif
 
+#ifdef _WIN32
+    #include <windows.h>
+#elif __linux__
+    #include <sys/sysinfo.h>
+#endif
+
 #include <string>
 #include <string.h>
 #include <math.h>
@@ -43,11 +49,6 @@
 #include <ostream>
 #include "picosha2.h"
 #include "zlib.h"
-
-#ifdef _WIN32
-#include <windows.h>
-
-#endif
 
 using namespace std;
 using namespace std::chrono;
@@ -118,6 +119,34 @@ protected:
         return "\03";
     }
 };
+
+unsigned long long int get_ninety_percent_free_memory() {
+    unsigned long long int free_memory = 0;
+
+    #ifdef _WIN32
+        // Windows-specific memory information
+        MEMORYSTATUSEX memInfo;
+        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memInfo);
+        DWORDLONG freePhysMem = memInfo.ullAvailPhys;
+        free_memory = static_cast<unsigned long long>(freePhysMem * 0.9); // 90% of free physical memory
+    #elif __linux__
+        // Linux-specific memory information
+        struct sysinfo memInfo;
+        sysinfo(&memInfo);
+        unsigned long long totalPhysMem = memInfo.totalram;
+        // Multiply in next statement to avoid int overflow on right hand side...
+        totalPhysMem *= memInfo.mem_unit;
+        unsigned long long freePhysMem = memInfo.freeram;
+        freePhysMem *= memInfo.mem_unit;
+        free_memory = static_cast<unsigned long long>(freePhysMem * 0.9); // 90% of free memory
+    #else
+        std::cerr << "Unsupported operating system" << std::endl;
+        return static_cast<unsigned long long>(-1); // Return max value to indicate error
+    #endif
+
+    return free_memory;
+}
 
 std::string compressMessage(const std::string &message)
 {
@@ -337,7 +366,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.11 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.12 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -799,6 +828,16 @@ int main(int argc, char **argv)
     }
 
     unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 1024);
+    unsigned long long int free_memory = get_ninety_percent_free_memory();
+
+    if (free_memory != static_cast<unsigned long long>(-1)) { // Check against max value for error
+        if (free_memory < INTENTION_MULTIPLIER) {
+            INTENTION_MULTIPLIER = free_memory;
+        }
+    } else {
+        std::cout << "Error retrieving memory information." << std::endl;
+        return 0;
+    }
 
 #ifndef _WIN32
     // Set the terminal color based on the --color flag.
@@ -875,7 +914,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.11 (c)2020-2024" << endl
+    std::cout << "Intention Repeater MAX v5.12 (c)2020-2024" << endl
               << "by Anthro Teacher aka Thomas Sweet." << endl
               << endl;
 
