@@ -31,3 +31,4 @@
 3/26/2024 v5.10 Added compression and hashing and removed PROCESS_STATEMENT that was blank anyway.
 3/26/2024 v5.11 Allowing for file import. Display hashing multiplier and compression amount.
 3/26/2024 v5.13 Displaying the Multiplier value.
+3/26/2024 v5.14 Fixed issue with segmentation error for assigning too much memory.

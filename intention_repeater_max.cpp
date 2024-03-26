@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.13 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.14 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -366,7 +366,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.13 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.14 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -827,7 +827,7 @@ int main(int argc, char **argv)
         param_intention = "NEST-" + param_boostlevel + ".TXT";
     }
 
-    unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 1024);
+    unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 512);
     unsigned long long int free_memory = get_ninety_percent_free_memory();
 
     if (free_memory != static_cast<unsigned long long>(-1)) { // Check against max value for error
@@ -914,7 +914,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.13 (c)2020-2024" << endl
+    std::cout << "Intention Repeater MAX v5.14 (c)2020-2024" << endl
               << "by Anthro Teacher aka Thomas Sweet." << endl
               << endl;
 
@@ -974,7 +974,6 @@ int main(int argc, char **argv)
 
         intention_value = intention_value.substr(0, intention_length_val);
         digits = to_string(multiplier).length();
-        std::cout << "Multiplier: " << display_suffix(to_string(multiplier), digits - 1, "Iterations") << endl;
     } // End Multiplier (when not using frequency)
 
     if (INTENTION_MULTIPLIER == 0)
@@ -1006,6 +1005,10 @@ int main(int argc, char **argv)
     {
         useCompression = param_compress;
         transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+    }
+
+    if (multiplier > 0) {
+        std::cout << "Multiplier: " << display_suffix(to_string(multiplier), digits - 1, "Iterations") << endl;
     }
 
     if (useHashing == "y" || useHashing == "yes")
@@ -1041,9 +1044,9 @@ int main(int argc, char **argv)
     if (useCompression == "y" || useCompression == "yes")
     {
         std::cout << "Compressing...          \r";
-        originalIntentionSize = intention_value.length();
+        originalIntentionSize = intention_value.length()*2;
         intention_value = compressMessage(intention_value);
-        compressedIntentionSize = intention_value.length();
+        compressedIntentionSize = intention_value.length()*2;
         compressionFactor = (originalIntentionSize / compressedIntentionSize);
 
         compressionFactor_digits = to_string(compressionFactor).length();
@@ -1051,8 +1054,8 @@ int main(int argc, char **argv)
         originalIntention_digits = to_string(originalIntentionSize).length();
 
         std::cout << "Compression: " << display_suffix(to_string(compressionFactor), compressionFactor_digits - 1, "Iterations") << "X ["
-                  << display_suffix(to_string(originalIntentionSize/1024/1024), originalIntention_digits - 1, "Frequency") << "B -> "
-                  << display_suffix(to_string(compressedIntentionSize/1024), compressedIntentionSize_digits - 1, "Frequency") << "B]     " << endl;
+                  << display_suffix(to_string(originalIntentionSize), originalIntention_digits - 1, "Frequency") << "B -> "
+                  << display_suffix(to_string(compressedIntentionSize), compressedIntentionSize_digits - 1, "Frequency") << "B]     " << endl;
     }
 
     duration = param_duration;
