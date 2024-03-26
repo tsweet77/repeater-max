@@ -13,7 +13,7 @@ and intention_repeater_max.exe if you are on Windows.
 
 For MacOS 10.9+ you can get MacOS_intention_repeater_max_5.7.tar
 
-To compile your code: g++ -O3 -Wall -static intention_repeater_max.cpp -o intention_repeater_max.exe
+To compile your code: g++ -O3 -Wall -static intention_repeater_max.cpp -o intention_repeater_max.exe -lz
 
 v5.10 .cpp requires picosha2.h and zlib.h
 

@@ -1,10 +1,10 @@
 /*
-    Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.11 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
     Updated 3/26/2024 by Anthro Teacher.
-    To compile on Linux, I recommend g++.
+    To compile: g++ -O3 -Wall -static intention_repeater_max.cpp -o intention_repeater_max.exe -lz
     Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
     Intention Repeater MAX is powered by a Servitor (20 Years / 2000+ hours in
@@ -158,9 +158,38 @@ std::string compressMessage(const std::string &message)
     return compressed;
 }
 
+// Function to read contents of a file into a string
+void readFileContents(const std::string &filename, std::string &intention_file_contents)
+{
+    // Open the file using an ifstream
+    std::ifstream file(filename);
+
+    // Check if the file was successfully opened
+    if (!file)
+    {
+        // If the file cannot be opened or does not exist, print an error and exit
+        std::cerr << "File not found" << std::endl;
+        exit(EXIT_FAILURE); // Terminate the program
+    }
+
+    // Read the file contents into the string
+    std::stringstream buffer;
+    buffer << file.rdbuf();                 // Read the buffer contents of the file
+    intention_file_contents = buffer.str(); // Convert the buffer into a string
+
+    // Close the file (optional here since it'll be closed automatically when the function exits)
+    file.close();
+}
+
 std::string display_suffix(std::string num, int power, std::string designator)
 {
     std::string s;
+
+    if (power < 3)
+    {
+        return num;
+    }
+
     if (designator == "Iterations")
     {
         char iterations_suffix_array[] = {' ', 'k', 'M', 'B', 'T', 'q', 'Q', 's', 'S', 'O', 'N', 'D'};
@@ -169,7 +198,7 @@ std::string display_suffix(std::string num, int power, std::string designator)
     }
     else // designator == "Frequency"
     {
-        char frequency_suffix_array[] = {' ', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'};
+        char frequency_suffix_array[] = {' ', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y', 'R'};
         // cout << "Power: " << power << endl;
         s = frequency_suffix_array[int(power / 3)];
     }
@@ -233,23 +262,23 @@ void print_color_help()
          << endl;
 
 #ifndef _WIN32
-    cout << DEFAULT << "DEFAULT" << endl;
-    cout << DARKGRAY << "DARKGRAY" << endl;
-    cout << BLACK << "BLACK" << endl;
-    cout << LIGHTRED << "LIGHTRED" << endl;
-    cout << RED << "RED" << endl;
-    cout << LIGHTGREEN << "LIGHTGREEN" << endl;
-    cout << GREEN << "GREEN" << endl;
-    cout << LIGHTYELLOW << "LIGHTYELLOW" << endl;
-    cout << YELLOW << "YELLOW" << endl;
-    cout << LIGHTBLUE << "LIGHTBLUE" << endl;
-    cout << BLUE << "BLUE" << endl;
-    cout << LIGHTMAGENTA << "LIGHTMAGENTA" << endl;
-    cout << MAGENTA << "MAGENTA" << endl;
-    cout << LIGHTCYAN << "LIGHTCYAN" << endl;
-    cout << CYAN << "CYAN" << endl;
-    cout << WHITE << "WHITE" << endl;
-    cout << LIGHTGRAY << "LIGHTGRAY" << endl;
+    std::cout << DEFAULT << "DEFAULT" << endl;
+    std::cout << DARKGRAY << "DARKGRAY" << endl;
+    std::cout << BLACK << "BLACK" << endl;
+    std::cout << LIGHTRED << "LIGHTRED" << endl;
+    std::cout << RED << "RED" << endl;
+    std::cout << LIGHTGREEN << "LIGHTGREEN" << endl;
+    std::cout << GREEN << "GREEN" << endl;
+    std::cout << LIGHTYELLOW << "LIGHTYELLOW" << endl;
+    std::cout << YELLOW << "YELLOW" << endl;
+    std::cout << LIGHTBLUE << "LIGHTBLUE" << endl;
+    std::cout << BLUE << "BLUE" << endl;
+    std::cout << LIGHTMAGENTA << "LIGHTMAGENTA" << endl;
+    std::cout << MAGENTA << "MAGENTA" << endl;
+    std::cout << LIGHTCYAN << "LIGHTCYAN" << endl;
+    std::cout << CYAN << "CYAN" << endl;
+    std::cout << WHITE << "WHITE" << endl;
+    std::cout << LIGHTGRAY << "LIGHTGRAY" << endl;
 
 #else
 
@@ -257,7 +286,7 @@ void print_color_help()
     {
         // pick the colorattribute k you want
         SetConsoleTextAttribute(hConsole, k);
-        cout << enum2str[k] << endl;
+        std::cout << enum2str[k] << endl;
     }
 #endif // _WIN32
 }
@@ -290,25 +319,25 @@ void create_nesting_files()
         myfile.close();
     }
 
-    cout << "Intention Repeater Nesting Files Written." << endl;
+    std::cout << "Intention Repeater Nesting Files Written." << endl;
 
-    cout << "Be sure to have your intentions in the INTENTIONS.TXT file." << endl;
+    std::cout << "Be sure to have your intentions in the INTENTIONS.TXT file." << endl;
 
-    cout << "To run with the nesting option, use --boostlevel 50, for example to use up to Nesting to 50 levels deep."
-         << endl;
+    std::cout << "To run with the nesting option, use --boostlevel 50, for example to use up to Nesting to 50 levels deep."
+              << endl;
 
-    cout << "--boostlevel valid values: 1 to 100." << endl;
+    std::cout << "--boostlevel valid values: 1 to 100." << endl;
 
-    cout << "When using --boostlevel 50, for example, it will ignore the --intent, and use \"NEST-50.TXT\" for the "
-            "intent instead."
-         << endl
-         << endl;
+    std::cout << "When using --boostlevel 50, for example, it will ignore the --intent, and use \"NEST-50.TXT\" for the "
+                 "intent instead."
+              << endl
+              << endl;
 }
 
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.11 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -332,7 +361,8 @@ Optional Flags:
  o) --restfor or -r
  p) --compress or -x
  q) --hashing or -g
- r) --help or -h
+ r) --file or -f
+ s) --help or -h
 
 --dur = Duration in HH:MM:SS format. Default = Run until stopped manually.
 --imem = Specify how many GB of System RAM to use. Higher amount repeats faster, but takes longer to load. Default = 1.0.
@@ -350,7 +380,8 @@ Optional Flags:
 --restevery = Stop repeating every specified # of seconds.
 --restfor = # of Seconds to rest for each rest period.
 --compress = Use compression Default n.
---hashing - Use hashing. Default n.
+--hashing = Use hashing. Default n.
+--file = Specify file to use if applicable. Will override intention.
 --help = Display this help.
 
 Example usage:
@@ -635,7 +666,8 @@ int main(int argc, char **argv)
     std::string intention, process_intention, intention_value, duration, param_duration,
         param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
         param_amplification, runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE, param_restevery, param_restfor,
-        param_compress, param_hashing, useHashing, useCompression, intention_hashed, totalIterations = "0", totalFreq = "0";
+                                                          param_compress, param_hashing, useHashing, useCompression, intention_hashed, totalIterations = "0", totalFreq = "0", param_file = "X",
+                                                          intention_display = "", loading_message;
     unsigned long long int multiplier = 0, amplification_int = 1000000000, cpu_benchmark_count = 0, hashMultiplier = 0, freq = 0;
     int seconds = 0, frequency_int = 0, restevery_int = 0, restfor_int = 0, digits = 0, freqDigits = 0;
     float ram_size_value = 1;
@@ -644,7 +676,7 @@ int main(int argc, char **argv)
     param_duration = "UNTIL STOPPED";
     param_timer = "EXACT";
     param_freq = "0";
-    param_intention = "";
+    param_intention = "X";
     param_color = "WHITE";
     param_usehololink = "NO";
     param_boostlevel = "0";
@@ -750,6 +782,10 @@ int main(int argc, char **argv)
             param_compress = argv[i + 1];
             std::transform(param_compress.begin(), param_compress.end(), param_compress.begin(), ::toupper);
         }
+        else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file"))
+        {
+            param_file = argv[i + 1];
+        }
     }
 
     if (param_usehololink == "YES")
@@ -762,44 +798,44 @@ int main(int argc, char **argv)
         param_intention = "NEST-" + param_boostlevel + ".TXT";
     }
 
-    unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 512);
+    unsigned long long int INTENTION_MULTIPLIER = (ram_size_value * 1024 * 1024 * 1024);
 
 #ifndef _WIN32
     // Set the terminal color based on the --color flag.
     if (param_color == "DEFAULT")
-        cout << DEFAULT << std::flush;
+        std::cout << DEFAULT << std::flush;
     else if (param_color == "BLACK")
-        cout << BLACK << std::flush;
+        std::cout << BLACK << std::flush;
     else if (param_color == "RED")
-        cout << RED << std::flush;
+        std::cout << RED << std::flush;
     else if (param_color == "GREEN")
-        cout << GREEN << std::flush;
+        std::cout << GREEN << std::flush;
     else if (param_color == "YELLOW")
-        cout << YELLOW << std::flush;
+        std::cout << YELLOW << std::flush;
     else if (param_color == "BLUE")
-        cout << BLUE << std::flush;
+        std::cout << BLUE << std::flush;
     else if (param_color == "MAGENTA")
-        cout << MAGENTA << std::flush;
+        std::cout << MAGENTA << std::flush;
     else if (param_color == "CYAN")
-        cout << CYAN << std::flush;
+        std::cout << CYAN << std::flush;
     else if (param_color == "LIGHTGRAY")
-        cout << LIGHTGRAY << std::flush;
+        std::cout << LIGHTGRAY << std::flush;
     else if (param_color == "DARK_GRAY")
-        cout << DARKGRAY << std::flush;
+        std::cout << DARKGRAY << std::flush;
     else if (param_color == "LIGHTRED")
-        cout << LIGHTRED << std::flush;
+        std::cout << LIGHTRED << std::flush;
     else if (param_color == "LIGHTGREEN")
-        cout << LIGHTGREEN << std::flush;
+        std::cout << LIGHTGREEN << std::flush;
     else if (param_color == "LIGHTYELLOW")
-        cout << LIGHTYELLOW << std::flush;
+        std::cout << LIGHTYELLOW << std::flush;
     else if (param_color == "LIGHTBLUE")
-        cout << LIGHTBLUE << std::flush;
+        std::cout << LIGHTBLUE << std::flush;
     else if (param_color == "LIGHTMAGENTA")
-        cout << LIGHTMAGENTA << std::flush;
+        std::cout << LIGHTMAGENTA << std::flush;
     else if (param_color == "LIGHTCYAN")
-        cout << LIGHTCYAN << std::flush;
+        std::cout << LIGHTCYAN << std::flush;
     else if (param_color == "WHITE")
-        cout << WHITE << std::flush;
+        std::cout << WHITE << std::flush;
 
 #else
     if (param_color == "BLACK")
@@ -839,38 +875,51 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka "
-            "Thomas Sweet."
-         << endl;
-    cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
-    cout << "Holo-Link framework originally created by Mystic Minds. This "
-            "implementation by Anthro Teacher."
-         << endl;
-    cout << "Boosting through Nested Files and Intention Multiplying created by Anthro Teacher." << endl;
+    std::cout << "Intention Repeater MAX v5.11 (c)2020-2024" << endl
+              << "by Anthro Teacher aka Thomas Sweet." << endl
+              << endl;
 
     if (param_usehololink == "YES")
     {
         param_intention = HSUPLINK_FILE;
-        cout << "USING HOLO-LINK." << endl
-             << endl;
+        std::cout << "USING HOLO-LINK." << endl
+                  << endl;
     }
 
-    if ((param_intention) == "")
+    if (param_file == "X")
     {
-        cout << "Intention: ";
-        std::getline(std::cin, intention);
+        if ((param_intention) == "X")
+        {
+            std::cout << "Intention: ";
+            std::getline(std::cin, intention);
+            intention_display = intention;
+        }
+        else
+        {
+            intention = param_intention;
+            intention_display = intention;
+        }
     }
     else
     {
-        intention = param_intention;
+        readFileContents(param_file, intention);
+        intention_display = "Contents of: " + param_file;
     }
 
     if (param_freq == "0" && INTENTION_MULTIPLIER > 0) // Only use multiplier if --freq flag is not set or
                                                        // specifically said not to use it.
     {
+        if (param_file == "X")
+        {
+            loading_message = "LOADING INTENTION INTO MEMORY";
+        }
+        else
+        {
+            loading_message = "LOADING " + param_file + " INTO MEMORY";
+        }
 
-        cout << "LOADING INTENTION INTO MEMORY" << std::flush;
-        // Repeat string till it is more than INTENTION_MULTIPLIER characters long.
+        std::cout << loading_message;
+
         while (intention_value.length() < INTENTION_MULTIPLIER)
         {
             intention_value += intention;
@@ -887,6 +936,8 @@ int main(int argc, char **argv)
         intention_value = intention_value.substr(0, intention_length_val);
     } // End Multiplier (when not using frequency)
 
+    std::cout << endl;
+
     if (INTENTION_MULTIPLIER == 0)
     {
         intention_value = intention;
@@ -896,7 +947,7 @@ int main(int argc, char **argv)
     // Check for Hashing
     if (param_hashing == "X")
     {
-        cout << "Use Hashing (y/N): ";
+        std::cout << "Use Hashing (y/N): ";
         getline(cin, useHashing);
         transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
     }
@@ -908,7 +959,7 @@ int main(int argc, char **argv)
 
     if (param_compress == "X")
     {
-        cout << "Use Compression (y/N): ";
+        std::cout << "Use Compression (y/N): ";
         getline(cin, useCompression);
         transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
     }
@@ -920,6 +971,7 @@ int main(int argc, char **argv)
 
     if (useHashing == "y" || useHashing == "yes")
     {
+        std::cout << "Hashing...          \r";
         intention_hashed = picosha2::hash256_hex_string(intention_value);
         if (INTENTION_MULTIPLIER > 0)
         {
@@ -935,22 +987,38 @@ int main(int argc, char **argv)
             intention_value = intention_hashed;
             hashMultiplier = 1;
         }
+
+        digits = to_string(hashMultiplier).length();
+        std::cout << "Hash Multiplier: " << display_suffix(to_string(hashMultiplier), digits - 1, "Iterations") << endl;
     }
     else
     {
         hashMultiplier = 1;
     }
 
+    long long int originalIntentionSize, compressedIntentionSize, compressionFactor;
+    int compressionFactor_digits, compressedIntentionSize_digits, originalIntention_digits;
+
     if (useCompression == "y" || useCompression == "yes")
     {
+        std::cout << "Compressing...          \r";
+        originalIntentionSize = intention_value.length();
         intention_value = compressMessage(intention_value);
+        compressedIntentionSize = intention_value.length();
+        compressionFactor = (originalIntentionSize / compressedIntentionSize);
+
+        compressionFactor_digits = to_string(compressionFactor).length();
+        compressedIntentionSize_digits = to_string(compressedIntentionSize).length();
+        originalIntention_digits = to_string(originalIntentionSize).length();
+
+        std::cout << "Compression: " << display_suffix(to_string(compressionFactor), compressionFactor_digits - 1, "Iterations") << "X ["
+                  << display_suffix(to_string(originalIntentionSize/1024/1024), originalIntention_digits - 1, "Frequency") << "B -> "
+                  << display_suffix(to_string(compressedIntentionSize/1024), compressedIntentionSize_digits - 1, "Frequency") << "B]     " << endl;
     }
 
     duration = param_duration;
 
     process_intention.reserve(intention_value.size() + 20);
-
-    cout << endl;
 
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
@@ -991,14 +1059,14 @@ int main(int argc, char **argv)
                               << " (" << setprecision(3) << fixed
                               << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
                               << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
-                              << " Hz): " << intention << "     \r" << std::flush;
+                              << " Hz): " << intention_display << "     \r" << std::flush;
                 }
                 else // suffix_value = "HZ"
                 {
                     std::cout << "[" + runtime_formatted + "]"
                               << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
                               << display_suffix(totalFreq, freqDigits - 1, "Frequency")
-                              << "Hz): " << intention << "     \r" << std::flush;
+                              << "Hz): " << intention_display << "     \r" << std::flush;
                 }
 
                 if (runtime_formatted == duration)
@@ -1020,14 +1088,14 @@ int main(int argc, char **argv)
                                   << " (" << setprecision(3) << fixed
                                   << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
                                   << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
-                                  << " Hz): " << intention << "     \r" << std::flush;
+                                  << " Hz): " << intention_display << "     \r" << std::flush;
                     }
                     else // suffix_value = "HZ"
                     {
                         std::cout << "[" + runtime_formatted + "]"
                                   << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
                                   << display_suffix(totalFreq, freqDigits - 1, "Frequency")
-                                  << "Hz): " << intention << "     \r" << std::flush;
+                                  << "Hz): " << intention_display << "     \r" << std::flush;
                     }
                     while ((chrono::duration_cast<chrono::seconds>(end - start).count() < restfor_int))
                     {
@@ -1093,14 +1161,14 @@ int main(int argc, char **argv)
                               << " (" << setprecision(3) << fixed
                               << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
                               << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
-                              << " Hz): " << intention << "     \r" << std::flush;
+                              << " Hz): " << intention_display << "     \r" << std::flush;
                 }
                 else // suffix_value = "HZ"
                 {
                     std::cout << "[" + runtime_formatted + "]"
                               << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
                               << display_suffix(totalFreq, freqDigits - 1, "Frequency")
-                              << "Hz): " << intention << "     \r" << std::flush;
+                              << "Hz): " << intention_display << "     \r" << std::flush;
                 }
 
                 if (runtime_formatted == duration)
@@ -1122,14 +1190,14 @@ int main(int argc, char **argv)
                                   << " (" << setprecision(3) << fixed
                                   << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
                                   << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
-                                  << " Hz): " << intention << "     \r" << std::flush;
+                                  << " Hz): " << intention_display << "     \r" << std::flush;
                     }
                     else // suffix_value = "HZ"
                     {
                         std::cout << "[" + runtime_formatted + "]"
                                   << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
                                   << display_suffix(totalFreq, freqDigits - 1, "Frequency")
-                                  << "Hz): " << intention << "     \r" << std::flush;
+                                  << "Hz): " << intention_display << "     \r" << std::flush;
                     }
                     while ((chrono::duration_cast<chrono::seconds>(end - start).count() < restfor_int))
                     {
@@ -1184,14 +1252,14 @@ int main(int argc, char **argv)
                           << " (" << setprecision(3) << fixed
                           << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
                           << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
-                          << " Hz): " << intention << "     \r" << std::flush;
+                          << " Hz): " << intention_display << "     \r" << std::flush;
             }
             else // suffix_value = "HZ"
             {
                 std::cout << "[" + runtime_formatted + "]"
                           << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
                           << display_suffix(totalFreq, freqDigits - 1, "Frequency")
-                          << "Hz): " << intention << "     \r" << std::flush;
+                          << "Hz): " << intention_display << "     \r" << std::flush;
             }
 
             if (runtime_formatted == duration)
@@ -1204,7 +1272,7 @@ int main(int argc, char **argv)
     } // End repetition_period nonzero
 
 #ifndef _WIN32
-    cout << WHITE << std::flush;
+    std::cout << WHITE << std::flush;
 #else
     SetConsoleTextAttribute(hConsole, WHITE);
 #endif

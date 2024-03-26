@@ -29,3 +29,4 @@
 3/24/2024 v5.8 Fixed "intention_value = intention + PROCESS_STATEMENT" instead of "intention_value = intention_value + PROCESS_STATEMENT" (Line 915).
 3/25/2024 v5.9 Updated to prevent compiler from optimizing out the repeater process.
 3/26/2024 v5.10 Added compression and hashing and removed PROCESS_STATEMENT that was blank anyway.
+3/26/2024 v5.11 Allowing for file import. Display hashing multiplier and compression amount.
