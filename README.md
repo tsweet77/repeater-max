@@ -6,28 +6,16 @@ Written in C++, this is the successor to the original Intention Repeater, writte
 
 The code, and the Servitor, were created by Anthro Teacher, aka Thomas Sweet.
 
-It repeats your intention up to 20+PHz, to make things happen.
+It repeats your intention up to 10+EHz, to make things happen.
 
 You probably want intention_repeater_max.cpp if you are on Linux,
 and intention_repeater_max.exe if you are on Windows.
 
 For MacOS 10.9+ you can get MacOS_intention_repeater_max_5.7.tar
 
-To compile, g++ is faster (by a little), but I prefer clang++ because it has a cooler name.
+To compile your code: g++ -O3 -Wall -static intention_repeater_max.cpp -o intention_repeater_max.exe
 
-Be sure to check out the clang-format utility to format your code to industry standards.
-
-To compile your code: clang++ -O3 -Wall -static ./intention_repeater_max.cpp -o ./intention_repeater_max
-
-Please see the Example .cpp files for the basics of Multiplying Intention in memory, and to a file.
-
-To edit code I recommend Visual Studio Code.
-
-To format the code, and beautify it, I recommend clang-format.
-
-Special thanks to Karteek Sheri for providing the benchmarking and performance enhancement.
-
-Special thanks to Mystic Minds for creating the Holo-Link framework that is used in v4.0+.
+v5.10 .cpp requires picosha2.h and zlib.h
 
 # Nesting Files Creation Utility: https://github.com/tsweet77/nesting-files-creation-utility
 
