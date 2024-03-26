@@ -1,9 +1,9 @@
 /*
-    Intention Repeater MAX v5.8 (c)2020-2022 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
-    Updated 6/26/2022 by Anthro Teacher.
+    Updated 3/26/2024 by Anthro Teacher.
     To compile on Linux, I recommend g++.
     Repeats your intention up to 100 PHz to make things happen.
     For help: intention_repeater_max.exe --help
@@ -19,47 +19,30 @@
 */
 
 #include <stdio.h>
-
 #ifndef _WIN32
 #include <unistd.h>
-
 #endif
 
 #include <string>
-
 #include <string.h>
-
 #include <math.h>
-
 #include <cmath>
-
 #include <fstream>
-
 #include <iostream>
-
 #include <time.h>
-
 #include <ctime>
-
 #include <ratio>
-
 #include <chrono>
-
 #include <iomanip>
-
 #include <locale.h>
-
 #include <cstdint>
-
 #include <vector>
-
 #include <iterator>
-
 #include <sstream>
-
 #include <algorithm>
-
 #include <ostream>
+#include "picosha2.h"
+#include "zlib.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -136,6 +119,45 @@ protected:
     }
 };
 
+std::string compressMessage(const std::string &message)
+{
+    z_stream zs;
+    memset(&zs, 0, sizeof(zs));
+
+    if (deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK)
+    {
+        return ""; // Compression initialization failed
+    }
+
+    zs.next_in = (Bytef *)message.data();
+    zs.avail_in = message.size();
+
+    std::string compressed;
+    char outbuffer[32768]; // Output buffer
+    int ret;
+    do
+    {
+        zs.next_out = reinterpret_cast<Bytef *>(outbuffer);
+        zs.avail_out = sizeof(outbuffer);
+
+        ret = deflate(&zs, Z_FINISH);
+
+        if (compressed.size() < zs.total_out)
+        {
+            compressed.append(outbuffer, zs.total_out - compressed.size());
+        }
+    } while (ret == Z_OK);
+
+    deflateEnd(&zs);
+
+    if (ret != Z_STREAM_END)
+    {
+        return ""; // Compression failed
+    }
+
+    return compressed;
+}
+
 std::string display_suffix(std::string num, int power, std::string designator)
 {
     std::string s;
@@ -155,52 +177,6 @@ std::string display_suffix(std::string num, int power, std::string designator)
     std::string str2 = num.substr(0, power % 3 + 1) + "." + num.substr(power % 3 + 1, 3) + s;
 
     return str2;
-}
-
-static const char *short_scale[] = {"", "k", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "D"};
-
-static const char *short_scale_hz[] = {"", "k", "M", "G", "T", "P", "E", "Z", "Y"};
-
-const char *scale(unsigned long long int n, int decimals = 1, const char *units[] = short_scale)
-{
-    /*
-     * Number of digits in n is given by
-     * 10^x = n ==> x = log(n)/log(10) = log_10(n).
-     *
-     * So 1000 would be 1 + floor(log_10(10^3)) = 4 digits.
-     */
-    int digits = n == 0 ? 0 : 1 + floor(log10l(fabs(n)));
-
-    // determine base 10 exponential
-    int exp = digits <= 4 ? 0 : 3 * ((digits - 1) / 3);
-
-    // normalized number
-    double m = n / powl(10, exp);
-
-    // no decimals? then don't print any
-    if (m - static_cast<long>(n) == 0)
-        decimals = 0;
-
-    // don't print unit for exp<3
-    static char s[64];
-    static const char *fmt[] = {"%1.*lf%s", "%1.*lf"};
-    sprintf(s, fmt[exp < 3], decimals, m, units[exp / 3]);
-    return s;
-}
-
-const char *suffix(unsigned long long int n, int decimals = 1)
-{
-    static char s[64];
-    strcpy(s, scale(n, decimals, short_scale));
-    return s;
-}
-
-const char *suffix_hz(unsigned long long int n, int decimals = 1)
-{
-    static char s[64];
-    strcpy(s, scale(n, decimals, short_scale_hz));
-
-    return s;
 }
 
 std::string FormatTimeRun(int seconds_elapsed)
@@ -314,7 +290,7 @@ void create_nesting_files()
         myfile.close();
     }
 
-    cout << LIGHTBLUE << "Intention Repeater Nesting Files Written." << endl;
+    cout << "Intention Repeater Nesting Files Written." << endl;
 
     cout << "Be sure to have your intentions in the INTENTIONS.TXT file." << endl;
 
@@ -331,125 +307,85 @@ void create_nesting_files()
 
 void print_help()
 {
-#ifndef _WIN32
-    cout << LIGHTBLUE;
-#else
-    SetConsoleTextAttribute(hConsole, LIGHTYELLOW);
-#endif
+    const std::string helpText = R"(
+Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
+Performance benchmark, exponents and flags by Karteek Sheri.
+Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
+Intention multiplying by Anthro Teacher.
 
-    cout << LIGHTBLUE
-         << "Intention Repeater MAX v5.8 (c)2020-2022 by Anthro Teacher aka "
-            "Thomas Sweet."
-         << endl;
-    cout << "This utility repeats your intention millions of times per second, "
-            "in computer memory, to aid in manifestation."
-         << endl;
-    cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
-    cout << "Holo-Link framework by Mystic Minds. This implementation by Anthro "
-            "Teacher."
-         << endl;
-    cout << "Intention multiplying by Anthro Teacher." << endl
-         << endl;
+Optional Flags:
+ a) --dur or -d, example: --dur 00:01:00
+ b) --imem or -m, example: --imem 5
+ c) --intent or -i, example: --intent "I am love."
+ d) --suffix or -s, example: --suffix HZ
+ e) --timer or -t, example: --timer INEXACT
+ f) --freq or -f, example: --freq 1000
+ g) --color or -c, example: --color LIGHTBLUE
+ h) --boostlevel or -b, example: --boostlevel 100
+ i) --createnestingfiles or -p, example: --createnestingfiles
+ j) --usehololink or -u
+ k) --createhololinkfiles or -x
+ l) --colorhelp or -n
+ m) --amplify or -a
+ n) --restevery or -e
+ o) --restfor or -r
+ p) --compress or -x
+ q) --hashing or -g
+ r) --help or -h
 
-    cout << "Optional Flags:" << endl;
-    cout << " a) --dur or -d, example: --dur 00:01:00" << endl;
-    cout << " b) --imem or -m, example: --imem 5" << endl;
-    cout << " c) --intent or -i, example: --intent \"I am love.\"" << endl;
-    cout << " d) --suffix or -s, example: --suffix HZ" << endl;
-    cout << " e) --timer or -t, example: --timer INEXACT" << endl;
-    cout << " f) --freq or -f, example: --freq 1000" << endl;
-    cout << " g) --color or -c, example: --color LIGHTBLUE" << endl;
-    cout << " h) --boostlevel or -b, example: --boostlevel 100" << endl;
-    cout << " i) --createnestingfiles or -p, example: --createnestingfiles" << endl;
-    cout << " j) --usehololink or -u" << endl;
-    cout << " k) --createhololinkfiles or -x" << endl;
-    cout << " l) --colorhelp or -n" << endl;
-    cout << " m) --amplify or -a" << endl;
-    cout << " n) --restevery or -e" << endl;
-    cout << " o) --restfor or -r" << endl;
-    cout << " p) --help or -h" << endl
-         << endl;
+--dur = Duration in HH:MM:SS format. Default = Run until stopped manually.
+--imem = Specify how many GB of System RAM to use. Higher amount repeats faster, but takes longer to load. Default = 1.0.
+--intent = Intention. Default = Prompts the user for intention.
+--suffix = Specify whether to show regular (Hz) designator or scientific notation (Exp). Default = HZ.
+--timer = Specify INEXACT or EXACT. Default = EXACT.
+--freq = Specify repetition frequency in Hz. Default = As fast as possible.
+--usehololink = Utilize the Holo-Link framework by Mystic Minds.
+--createhololinkfiles will create the default Holo-Link files and exit. Run with this option before using the --usehololink option. This will overwrite the TXT files.
+--color = Set the text color. Default = WHITE.
+--colorhelp = List and show all available colors for text using the option --color.
+--createnestingfiles = Create the NEST- files required for boosting.
+--boostlevel = Set the level to boost the power (1-100). Use --createnestingfiles before using --boostlevel.
+--amplify = Amplification Level. Default = 1000000000.
+--restevery = Stop repeating every specified # of seconds.
+--restfor = # of Seconds to rest for each rest period.
+--compress = Use compression Default n.
+--hashing - Use hashing. Default n.
+--help = Display this help.
 
-    cout << "--dur = Duration in HH:MM:SS format. Default = Run until stopped "
-            "manually."
-         << endl;
-    cout << "--imem = Specify how many GB of System RAM to use. Higher amount "
-            "repeats faster, but takes longer to load. Default = 1.0."
-         << endl;
-    cout << "--intent = Intention. Default = Prompts the user for intention." << endl;
-    cout << "--suffix = Specify whether to show regular (Hz) designator or "
-            "scientific notation (Exp). Default = HZ."
-         << endl;
-    cout << "--timer = Specify INEXACT or EXACT. Default = INEXACT." << endl;
-    cout << "--freq = Specify repetition frequency in Hz. Default = As fast as "
-            "possible."
-         << endl;
-    cout << "--usehololink = Utilize the Holo-Link framework by Mystic Minds." << endl;
-    cout << "--createhololinkfiles will create the default Holo-Link files and "
-            "exit. Run with this option before using the --usehololink option. "
-            "This will overwrite the TXT files."
-         << endl;
-    cout << "--color = Set the text color. Default = WHITE." << endl;
-    cout << "--colorhelp = List and show all available colors for text using the "
-            "option --color."
-         << endl;
-    cout << "--createnestingfiles = Create the NEST- files required for boosting." << endl;
-    cout << "--boostlevel = Set the level to boost the power (1-100). Use --createnestingfiles before using "
-            "--boostlevel."
-         << endl;
-    cout << "--amplify = Amplification Level. Default = 1000000000." << endl;
+Example usage:
+intention_repeater_max.exe --dur "00:01:00" --imem 4.0 --intent "I am Love." --hashing y --compress y
 
-    cout << "--restevery = Stop Repeating every specified # of seconds." << endl;
+Example usage with Holo-Link:
+1) intention_repeater_max.exe --createhololinkfiles
+2) intention_repeater_max.exe --usehololink --color LIGHTBLUE --suffix EXP --dur 00:01:00 --imem 4.0 --intent "I am calm."
 
-    cout << "--restfor = # of Seconds to rest for each rest period." << endl;
+Make sure to create your INTENTIONS.TXT file, in this folder, with your intentions, before running #2 above.
+The --intent option is ignored when using --usehololink, which instead uses the INTENTIONS.TXT file.
 
-    cout << "--help = Display this help." << endl
-         << endl;
+Example usage with Nesting Files:
+1) intention_repeater_max.exe --createnestingfiles
+2) intention_repeater_max.exe --color LIGHTBLUE --dur 00:01:00 --imem 4.0 --boostlevel 5
 
-    cout << "Example usage:" << endl;
-    cout << "intention_repeater_max.exe --dur \"00:01:00\" --imem 4.0 --intent \"I am Love.\" --amplify 1000000000"
-         << endl
-         << endl;
+Make sure to create your INTENTIONS.TXT file, in this folder, with your intentions, and the Nesting Files before running #2 above.
 
-    cout << "Example usage with Holo-Link:" << endl;
-    cout << "1) intention_repeater_max.exe --createhololinkfiles" << endl;
-    cout << "2) intention_repeater_max.exe --usehololink --color LIGHTBLUE "
-            "--suffix EXP --dur 00:01:00 --imem 4.0 --intent \"I am calm.\""
-         << endl
-         << endl;
-
-    cout << "Make sure to create your INTENTIONS.TXT file, in this folder, with "
-            "your intentions, before running #2 above."
-         << endl;
-    cout << "The --intent option is ignored when using --usehololink, which "
-            "instead uses the INTENTIONS.TXT file."
-         << endl
-         << endl;
-
-    cout << "Example usage with Nesting Files:" << endl;
-    cout << "1) intention_repeater_max.exe --createnestingfiles" << endl;
-    cout << "2) intention_repeater_max.exe --color LIGHTBLUE --dur 00:01:00 --imem 4.0 --boostlevel 5" << endl
-         << endl;
-
-    cout << "Make sure to create your INTENTIONS.TXT file, in this folder, with "
-            "your intentions, and the Nesting Files before running #2 above."
-         << endl
-         << endl;
-
-    cout << "gitHub Repository: https://github.com/tsweet77/repeater-max" << endl;
-    cout << "Forum: https://forums.intentionrepeater.com" << endl;
-    cout << "Website: https://www.intentionrepeater.com" << endl;
+gitHub Repository: https://github.com/tsweet77/repeater-max
+Forum: https://forums.intentionrepeater.com
+Website: https://www.intentionrepeater.com
+)";
 
 #ifndef _WIN32
-    cout << LIGHTBLUE;
+    std::cout << helpText << std::endl;
 #else
-    SetConsoleTextAttribute(hConsole, LIGHTBLUE);
+    SetConsoleTextAttribute(hConsole, WHITE);
+    std::cout << helpText << std::endl;
+    SetConsoleTextAttribute(hConsole, WHITE);
 #endif
 }
 
 // Utility function to find the sum of two numbers represented as a string in
 // CPP
-std::string findsum(std::string a, std::string b)
+std::string FindSum(std::string a, std::string b)
 {
 
     std::vector<int> finalsum; // Stores the final sum of two number
@@ -513,180 +449,210 @@ std::string findsum(std::string a, std::string b)
 
 void create_hololink_files()
 {
-    std::string HOLOSTONE_FILE = "HOLOSTONE.TXT";
-    std::string THOUGHTFORM_A_FILE = "THOUGHTFORM_A.TXT";
-    std::string THOUGHTFORM_B_FILE = "THOUGHTFORM_B.TXT";
-    std::string AMPLIFIER_FILE = "AMPLIFIER.TXT";
-    std::string INTENTIONS_FILE = "INTENTIONS.TXT";
-    std::string HSUPLINK_FILE = "HSUPLINK.TXT";
+    const std::string HOLOSTONE_FILE = "HOLOSTONE.TXT";
+    const std::string THOUGHTFORM_A_FILE = "THOUGHTFORM_A.TXT";
+    const std::string THOUGHTFORM_B_FILE = "THOUGHTFORM_B.TXT";
+    const std::string AMPLIFIER_FILE = "AMPLIFIER.TXT";
+    const std::string INTENTIONS_FILE = "INTENTIONS.TXT";
+    const std::string HSUPLINK_FILE = "HSUPLINK.TXT";
 
-    std::string HOLOLINK_CONTENTS = "#Comments are designated with a # prefix, and such commands are to be "
-                                    "ignored by the Holo-Link.\r\n";
-    HOLOLINK_CONTENTS += "#" + HSUPLINK_FILE + " CONFIG FILE v1.0\r\n";
-    HOLOLINK_CONTENTS += "#Holo-Link framework created by Mystic Minds (2022).\r\n";
-    HOLOLINK_CONTENTS += "#This implementation of the Holo-Link framework by Anthro Teacher.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "DECLARATION PRIMARY (Properties of thought forms and uplink):\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare the uplink multiply the energy received from the Holo-Stones "
+    std::ostringstream HOLOLINK_CONTENTS;
+    HOLOLINK_CONTENTS << "#Comments are designated with a # prefix, and such commands are to be "
+                         "ignored by the Holo-Link.\r\n"
+                      << "#" << HSUPLINK_FILE << " CONFIG FILE v1.0\r\n"
+                      << "#Holo-Link framework created by Mystic Minds (2022).\r\n"
+                      << "#This implementation of the Holo-Link framework by Anthro Teacher.\r\n"
+                      << "\r\n"
+                      << "DECLARATION PRIMARY (Properties of thought forms and uplink):\r\n"
+                      << "\r\n"
+                      << "I declare the uplink multiply the energy received from the Holo-Stones "
                          "by Infinity and densify all energy to the highest amount to achieve "
-                         "Instant Quantum Manifestation of the energetic programmings in " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare the Holo-Stones to funnel their energy into "
-                         "HOLOSTONE.TXT.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare the Holo-Stones to amplify the power and "
-                         "receptivity of the energetic programmings in " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare the Holo-Stones to multiply the strength of the energetic "
-                         "programmings in " +
-                         HSUPLINK_FILE + " and increase the potency at the most optimal rate.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare that all energetic programmings in " + HSUPLINK_FILE +
-                         " be imprinted, imbued and amplified with the new "
-                         "energy from the Holo-Stones.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += HOLOSTONE_FILE + ", " + AMPLIFIER_FILE + ", " + THOUGHTFORM_A_FILE + " AND " +
-                         THOUGHTFORM_B_FILE +
-                         " are extremely pure and of highest vibration and are "
-                         "fully optimized for Instant Quantum Manifestation.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += THOUGHTFORM_A_FILE +
-                         " is creating an unbreakable and continuous connection "
-                         "and funnel energy to all energetic programmings in " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += THOUGHTFORM_A_FILE +
-                         " uses energy from Infinite Source to continuously uphold a perfect link "
-                         "between the Holo-Stones and the " +
-                         HSUPLINK_FILE +
-                         " to bring in infinitely more energy into all energetic programmings "
-                         "in " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += THOUGHTFORM_B_FILE + " reinforces 100% of energy into all the energetic programmings in " +
-                         HSUPLINK_FILE + " at the quantum level.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += THOUGHTFORM_B_FILE + " safely and efficiently removes all blockages in this system at the "
-                                              "quantum level to allow for Instant Quantum Manifestation.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += HOLOSTONE_FILE + " feeds " + AMPLIFIER_FILE +
-                         " which amplifies the energy and feeds it back to " + HOLOSTONE_FILE +
-                         " and repeats it to the perfect intensity.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "All energetic programmings listed in " + HSUPLINK_FILE +
-                         " are now amplified to the highest power, speed and quantum-level "
-                         "precision using energy from the Holo-Stones which are sourced through " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += HOLOSTONE_FILE + " works with Earth's Crystal Grid in the most optimal "
-                                          "way possible for Instant Quantum Manifestation.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "Earth's Power Grid is extremely pure, cool, clean, efficient, "
+                         "Instant Quantum Manifestation of the energetic programmings in "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << "I declare the Holo-Stones to funnel their energy into " << HOLOSTONE_FILE << ".\r\n"
+                      << "\r\n"
+                      << "I declare the Holo-Stones to amplify the power and "
+                         "receptivity of the energetic programmings in "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << "I declare the Holo-Stones to multiply the strength of the energetic "
+                         "programmings in "
+                      << HSUPLINK_FILE << " and increase the potency at the most optimal rate.\r\n"
+                      << "\r\n"
+                      << "I declare that all energetic programmings in " << HSUPLINK_FILE
+                      << " be imprinted, imbued and amplified with the new "
+                         "energy from the Holo-Stones.\r\n"
+                      << "\r\n"
+                      << HOLOSTONE_FILE << ", " << AMPLIFIER_FILE << ", " << THOUGHTFORM_A_FILE << " AND "
+                      << THOUGHTFORM_B_FILE
+                      << " are extremely pure and of highest vibration and are "
+                         "fully optimized for Instant Quantum Manifestation.\r\n"
+                      << "\r\n"
+                      << THOUGHTFORM_A_FILE
+                      << " is creating an unbreakable and continuous connection "
+                         "and funnel energy to all energetic programmings in "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << THOUGHTFORM_A_FILE
+                      << " uses energy from Infinite Source to continuously uphold a perfect link "
+                         "between the Holo-Stones and the "
+                      << HSUPLINK_FILE
+                      << " to bring in infinitely more energy into all energetic programmings "
+                         "in "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << THOUGHTFORM_B_FILE << " reinforces 100% of energy into all the energetic programmings in "
+                      << HSUPLINK_FILE << " at the quantum level.\r\n"
+                      << "\r\n"
+                      << THOUGHTFORM_B_FILE
+                      << " safely and efficiently removes all blockages in this system at the "
+                         "quantum level to allow for Instant Quantum Manifestation.\r\n"
+                      << "\r\n"
+                      << HOLOSTONE_FILE << " feeds " << AMPLIFIER_FILE
+                      << " which amplifies the energy and feeds it back to " << HOLOSTONE_FILE
+                      << " and repeats it to the perfect intensity.\r\n"
+                      << "\r\n"
+                      << "All energetic programmings listed in " << HSUPLINK_FILE
+                      << " are now amplified to the highest power, speed and quantum-level "
+                         "precision using energy from the Holo-Stones which are sourced through "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << HOLOSTONE_FILE
+                      << " works with Earth's Crystal Grid in the most optimal "
+                         "way possible for Instant Quantum Manifestation.\r\n"
+                      << "\r\n"
+                      << "Earth's Power Grid is extremely pure, cool, clean, efficient, "
                          "optimized, and of highest vibration and is safely tapped in the most "
                          "optimal way possible by HOLOSTONE.TXT for Instant Quantum "
                          "Manifestation, and uses the least amount of electricity possible for "
-                         "everyone who desires this.\r\n";
-    HOLOLINK_CONTENTS += "UPLINK CORE (Reference any object, file, spell, etc. here):\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += HOLOSTONE_FILE + " (Receives and distributes energy to all objects, "
-                                          "files, spells, etc referenced below):\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "[INSERT OBJECTS TO CHARGE]\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "INTENTIONS.TXT\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "DECLARATIONS SECONDARY (Add-ons that strengthen the "
-                         "properties of the uplink itself):\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare the Holo-Stones will uplink their energy "
-                         "into these energetic programmings in " +
-                         HSUPLINK_FILE +
-                         " to create instant, immediate and prominent results "
-                         "optimally, efficiently and effortlessly.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare these energetic programmings in " + HSUPLINK_FILE +
-                         " to grow stronger at the most optimal rate through the "
-                         "ever-growing power of the Holo-Stones.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I call upon the Holo-Stones to channel the Atlantean Master Crystals, "
+                         "everyone who desires this.\r\n"
+                      << "UPLINK CORE (Reference any object, file, spell, etc. here):\r\n"
+                      << "\r\n"
+                      << HOLOSTONE_FILE
+                      << " (Receives and distributes energy to all objects, "
+                         "files, spells, etc referenced below):\r\n"
+                      << "\r\n"
+                      << "[INSERT OBJECTS TO CHARGE]\r\n"
+                      << "\r\n"
+                      << "INTENTIONS.TXT\r\n"
+                      << "\r\n"
+                      << "DECLARATIONS SECONDARY (Add-ons that strengthen the "
+                         "properties of the uplink itself):\r\n"
+                      << "\r\n"
+                      << "I declare the Holo-Stones will uplink their energy "
+                         "into these energetic programmings in "
+                      << HSUPLINK_FILE
+                      << " to create instant, immediate and prominent results "
+                         "optimally, efficiently and effortlessly.\r\n"
+                      << "\r\n"
+                      << "I declare these energetic programmings in " << HSUPLINK_FILE
+                      << " to grow stronger at the most optimal rate through the "
+                         "ever-growing power of the Holo-Stones.\r\n"
+                      << "\r\n"
+                      << "I call upon the Holo-Stones to channel the Atlantean Master Crystals, "
                          "Infinite Source, Earth's Crystal Grid and Earth's Power Grid directly "
                          "and utilize their energy as a funnel into HOLOSTONE.TXT which will then "
-                         "funnel into the energetic programmings in " +
-                         HSUPLINK_FILE + ".\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "The energetic programmings specified in " + HSUPLINK_FILE +
-                         " are now being perfected and fully optimized.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I declare that the more the energetic programmings in " + HSUPLINK_FILE +
-                         " are used, the stronger they become.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I am in my highest and most optimal reality/timeline.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "I am grounded, cleared, healed, balanced, "
-                         "strong-willed and I release what I do not need.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "Every day, in every way, it's getting better and better.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "The Atlantean Master Crystals AND Earth's Crystal Grid "
-                         "are open to Infinite Source.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "For my highest good and the highest good of all.\r\n";
-    HOLOLINK_CONTENTS += "\r\n";
-    HOLOLINK_CONTENTS += "Thank you. So be it. OM.\r\n";
-    HOLOLINK_CONTENTS += "ALL ABOVE STATEMENTS RESPECT THE FREE WILL OF ALL INVOLVED.\r\n";
+                         "funnel into the energetic programmings in "
+                      << HSUPLINK_FILE << ".\r\n"
+                      << "\r\n"
+                      << "The energetic programmings specified in " << HSUPLINK_FILE
+                      << " are now being perfected and fully optimized.\r\n"
+                      << "\r\n"
+                      << "I declare that the more the energetic programmings in " << HSUPLINK_FILE
+                      << " are used, the stronger they become.\r\n"
+                      << "\r\n"
+                      << "I am in my highest and most optimal reality/timeline.\r\n"
+                      << "\r\n"
+                      << "I am grounded, cleared, healed, balanced, "
+                         "strong-willed and I release what I do not need.\r\n"
+                      << "\r\n"
+                      << "Every day, in every way, it's getting better and better.\r\n"
+                      << "\r\n"
+                      << "The Atlantean Master Crystals AND Earth's Crystal Grid "
+                         "are open to Infinite Source.\r\n"
+                      << "\r\n"
+                      << "For my highest good and the highest good of all.\r\n"
+                      << "\r\n"
+                      << "Thank you. So be it. OM.\r\n"
+                      << "ALL ABOVE STATEMENTS RESPECT THE FREE WILL OF ALL INVOLVED.\r\n";
 
-    ofstream HOLOSTONE_FILE_FILE(HOLOSTONE_FILE);
+    std::ofstream HOLOSTONE_FILE_FILE(HOLOSTONE_FILE);
     HOLOSTONE_FILE_FILE << "HOLOSTONE";
-    HOLOSTONE_FILE_FILE.close();
-    ofstream THOUGHTFORM_A_FILE_FILE(THOUGHTFORM_A_FILE);
+    std::ofstream THOUGHTFORM_A_FILE_FILE(THOUGHTFORM_A_FILE);
     THOUGHTFORM_A_FILE_FILE << "THOUGHTFORM A";
-    THOUGHTFORM_A_FILE_FILE.close();
-    ofstream THOUGHTFORM_B_FILE_FILE(THOUGHTFORM_B_FILE);
+    std::ofstream THOUGHTFORM_B_FILE_FILE(THOUGHTFORM_B_FILE);
     THOUGHTFORM_B_FILE_FILE << "THOUGHTFORM B";
-    THOUGHTFORM_B_FILE_FILE.close();
-    ofstream AMPLIFIER_FILE_FILE(AMPLIFIER_FILE);
+    std::ofstream AMPLIFIER_FILE_FILE(AMPLIFIER_FILE);
     AMPLIFIER_FILE_FILE << "AMPLIFIER";
-    AMPLIFIER_FILE_FILE.close();
-    ofstream HSUPLINK_FILE_FILE(HSUPLINK_FILE);
-    HSUPLINK_FILE_FILE << HOLOLINK_CONTENTS;
-    HSUPLINK_FILE_FILE.close();
+    std::ofstream HSUPLINK_FILE_FILE(HSUPLINK_FILE);
+    HSUPLINK_FILE_FILE << HOLOLINK_CONTENTS.str();
 
-    cout << LIGHTBLUE << "Holo-Link files created." << endl;
-    cout << "Remember to create your INTENTIONS.TXT file, in this folder, with "
-            "all your intentions for the Holo-Link."
-         << endl;
-    cout << "You may do one to a line, or however you feel." << endl;
-    cout << "You may now run with the --usehololink option." << endl;
-    cout << "When using --usehololink, the option --intent, will be ignored, and "
-            "INTENTIONS.TXT will be used instead."
-         << endl;
-    cout << GREEN << "Good Luck!" << endl;
+    std::cout << "Holo-Link files created." << std::endl;
+    std::cout << "Remember to create your INTENTIONS.TXT file, in this folder, with "
+                 "all your intentions for the Holo-Link."
+              << std::endl;
+    std::cout << "You may do one to a line, or however you feel." << std::endl;
+    std::cout << "You may now run with the --usehololink option." << std::endl;
+    std::cout << "When using --usehololink, the option --intent, will be ignored, and "
+                 "INTENTIONS.TXT will be used instead."
+              << std::endl;
+    std::cout << "Good Luck!" << std::endl;
+}
+
+string MultiplyStrings(const string &num1, const string &num2)
+{
+    int len1 = num1.size();
+    int len2 = num2.size();
+    vector<int> result(len1 + len2, 0);
+
+    for (int i = len1 - 1; i >= 0; --i)
+    {
+        for (int j = len2 - 1; j >= 0; --j)
+        {
+            int mul = (num1[i] - '0') * (num2[j] - '0');
+            int sum = mul + result[i + j + 1];
+
+            result[i + j + 1] = sum % 10;
+            result[i + j] += sum / 10;
+        }
+    }
+
+    string resultStr;
+    for (int num : result)
+    {
+        if (!(resultStr.empty() && num == 0))
+        {
+            resultStr.push_back(num + '0');
+        }
+    }
+
+    return resultStr.empty() ? "0" : resultStr;
 }
 
 int main(int argc, char **argv)
 {
-    std::string intention, PROCESS_STATEMENT, process_intention, intention_value, duration, param_duration,
+    std::string intention, process_intention, intention_value, duration, param_duration,
         param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color, param_usehololink,
-        param_amplification, runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE, param_restevery, param_restfor;
-    unsigned long long int iterations = 0, multiplier = 0, amplification_int = 1000000000, cpu_benchmark_count = 0;
-    int seconds = 0, frequency_int = 0, restevery_int = 0, restfor_int = 0;
+        param_amplification, runtime_formatted, ref_rate, suffix_value = "HZ", HSUPLINK_FILE, param_restevery, param_restfor,
+        param_compress, param_hashing, useHashing, useCompression, intention_hashed, totalIterations = "0", totalFreq = "0";
+    unsigned long long int multiplier = 0, amplification_int = 1000000000, cpu_benchmark_count = 0, hashMultiplier = 0, freq = 0;
+    int seconds = 0, frequency_int = 0, restevery_int = 0, restfor_int = 0, digits = 0, freqDigits = 0;
     float ram_size_value = 1;
 
     // parse command line arguments
     param_duration = "UNTIL STOPPED";
-    param_timer = "INEXACT";
+    param_timer = "EXACT";
     param_freq = "0";
     param_intention = "";
-    param_color = "LIGHTBLUE";
+    param_color = "WHITE";
     param_usehololink = "NO";
     param_boostlevel = "0";
     param_amplification = "1000000000";
     param_restevery = "0";
     param_restfor = "0";
-    PROCESS_STATEMENT = "";
+    param_hashing = "X";
+    param_compress = "X";
     HSUPLINK_FILE = "HSUPLINK.TXT";
 
     for (int i = 1; i < argc; i++)
@@ -773,6 +739,16 @@ int main(int argc, char **argv)
         {
             param_restfor = argv[i + 1];
             restfor_int = std::stoi(param_restfor);
+        }
+        else if (!strcmp(argv[i], "-g") || !strcmp(argv[i], "--hashing"))
+        {
+            param_hashing = argv[i + 1];
+            std::transform(param_hashing.begin(), param_hashing.end(), param_hashing.begin(), ::toupper);
+        }
+        else if (!strcmp(argv[i], "-x") || !strcmp(argv[i], "--compress"))
+        {
+            param_compress = argv[i + 1];
+            std::transform(param_compress.begin(), param_compress.end(), param_compress.begin(), ::toupper);
         }
     }
 
@@ -863,7 +839,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    cout << "Intention Repeater MAX v5.8 (c)2020-2022 by Anthro Teacher aka "
+    cout << "Intention Repeater MAX v5.10 (c)2020-2024 by Anthro Teacher aka "
             "Thomas Sweet."
          << endl;
     cout << "Performance benchmark, exponents and flags by Karteek Sheri." << endl;
@@ -889,9 +865,10 @@ int main(int argc, char **argv)
         intention = param_intention;
     }
 
-    if (param_freq == "0") // Only use multiplier if --freq flag is not set or
-                           // specifically said not to use it.
+    if (param_freq == "0" && INTENTION_MULTIPLIER > 0) // Only use multiplier if --freq flag is not set or
+                                                       // specifically said not to use it.
     {
+
         cout << "LOADING INTENTION INTO MEMORY" << std::flush;
         // Repeat string till it is more than INTENTION_MULTIPLIER characters long.
         while (intention_value.length() < INTENTION_MULTIPLIER)
@@ -905,21 +882,75 @@ int main(int argc, char **argv)
         // statement to limit to less than 1024 characters.
         long long int intention_value_length = intention_value.length();
         long long int intention_length = intention.length();
-        int process_statement_length = PROCESS_STATEMENT.length();
-        long long int intention_length_val = intention_value_length - intention_length - process_statement_length;
+        long long int intention_length_val = intention_value_length - intention_length;
 
         intention_value = intention_value.substr(0, intention_length_val);
-        intention_value += PROCESS_STATEMENT;
     } // End Multiplier (when not using frequency)
 
-    intention_value = intention_value + PROCESS_STATEMENT;
+    if (INTENTION_MULTIPLIER == 0)
+    {
+        intention_value = intention;
+        multiplier = 1;
+    }
+
+    // Check for Hashing
+    if (param_hashing == "X")
+    {
+        cout << "Use Hashing (y/N): ";
+        getline(cin, useHashing);
+        transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
+    }
+    else
+    {
+        useHashing = param_hashing;
+        transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
+    }
+
+    if (param_compress == "X")
+    {
+        cout << "Use Compression (y/N): ";
+        getline(cin, useCompression);
+        transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+    }
+    else
+    {
+        useCompression = param_compress;
+        transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+    }
+
+    if (useHashing == "y" || useHashing == "yes")
+    {
+        intention_hashed = picosha2::hash256_hex_string(intention_value);
+        if (INTENTION_MULTIPLIER > 0)
+        {
+            intention_value.clear();
+            while (intention_value.length() < INTENTION_MULTIPLIER)
+            {
+                intention_value += intention_hashed;
+                ++hashMultiplier;
+            }
+        }
+        else
+        {
+            intention_value = intention_hashed;
+            hashMultiplier = 1;
+        }
+    }
+    else
+    {
+        hashMultiplier = 1;
+    }
+
+    if (useCompression == "y" || useCompression == "yes")
+    {
+        intention_value = compressMessage(intention_value);
+    }
 
     duration = param_duration;
 
-    cout << endl;
+    process_intention.reserve(intention_value.size() + 20);
 
-    std::string iterations_string = "0", iterations_string_freq = "0";
-    int digits = 0, freq_digits = 0;
+    cout << endl;
 
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
@@ -934,37 +965,42 @@ int main(int argc, char **argv)
                 end = std::chrono::high_resolution_clock::now();
                 while ((chrono::duration_cast<chrono::seconds>(end - start).count() < 1))
                 {
-                    process_intention = intention_value; // This is the Intention Repeater call that
-                                                         // actually does the work with the Servitor
-                                                         // [HR6819].
-                    iterations++;
+                    // Clear previous value and reuse the allocated space
+                    process_intention.clear();
+                    // Append the fixed part and the changing part
+                    process_intention.append(intention_value);
+                    // process_intention.append(to_string(iterations));
+                    freq++;
                     end = std::chrono::high_resolution_clock::now();
                 }
                 ++seconds;
 
-                runtime_formatted = FormatTimeRun(seconds);
-                iterations_string_freq = to_string(iterations * multiplier);
-                iterations_string = findsum(iterations_string, iterations_string_freq);
-                digits = iterations_string.length();
+                totalFreq = MultiplyStrings(to_string(freq), to_string(multiplier));
+                totalFreq = MultiplyStrings(totalFreq, to_string(hashMultiplier));
+                totalIterations = FindSum(totalIterations, totalFreq);
 
-                freq_digits = iterations_string_freq.length();
+                digits = totalIterations.length();
+                freqDigits = totalFreq.length();
+                freq = 0;
+
+                runtime_formatted = FormatTimeRun(seconds);
 
                 if (suffix_value == "EXP")
                 {
                     std::cout << "[" + runtime_formatted + "]"
                               << " (" << setprecision(3) << fixed
-                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
+                              << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                              << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
                               << " Hz): " << intention << "     \r" << std::flush;
                 }
                 else // suffix_value = "HZ"
                 {
                     std::cout << "[" + runtime_formatted + "]"
-                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                              << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
+                              << display_suffix(totalFreq, freqDigits - 1, "Frequency")
                               << "Hz): " << intention << "     \r" << std::flush;
                 }
-                iterations = 0;
+
                 if (runtime_formatted == duration)
                 {
                     std::cout << endl
@@ -982,15 +1018,16 @@ int main(int argc, char **argv)
                     {
                         std::cout << "[" + runtime_formatted + "]"
                                   << " (" << setprecision(3) << fixed
-                                  << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                                  << "0 Hz): " << intention << "      \r" << std::flush;
+                                  << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                                  << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
+                                  << " Hz): " << intention << "     \r" << std::flush;
                     }
                     else // suffix_value = "HZ"
                     {
                         std::cout << "[" + runtime_formatted + "]"
-                                  << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                                                                                                            "0 Hz): "
-                                  << intention << "      \r" << std::flush;
+                                  << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
+                                  << display_suffix(totalFreq, freqDigits - 1, "Frequency")
+                                  << "Hz): " << intention << "     \r" << std::flush;
                     }
                     while ((chrono::duration_cast<chrono::seconds>(end - start).count() < restfor_int))
                     {
@@ -1007,7 +1044,11 @@ int main(int argc, char **argv)
 
             while ((std::chrono::duration_cast<std::chrono::seconds>(b_end - b_start).count() < 1))
             {
-                process_intention = intention_value; // The Intention Repeater Statement
+                // Clear previous value and reuse the allocated space
+                process_intention.clear();
+                // Append the fixed part and the changing part
+                process_intention.append(intention_value);
+                // process_intention.append(to_string(iterations));
                 cpu_benchmark_count++;
                 b_end = std::chrono::high_resolution_clock::now();
             }
@@ -1025,38 +1066,43 @@ int main(int argc, char **argv)
                 {
                     for (unsigned long long int i = 0; i < amplification_int; i++)
                     {
-                        process_intention = intention_value; // This is the Intention Repeater call that
-                                                             // actually does the work with the Servitor
-                                                             // [HR6819].
+                        // Clear previous value and reuse the allocated space
+                        process_intention.clear();
+                        // Append the fixed part and the changing part
+                        process_intention.append(intention_value);
+                        // process_intention.append(to_string(iterations));
                     }
 
-                    iterations += amplification_int;
+                    freq += amplification_int;
                     end = std::chrono::high_resolution_clock::now();
                 }
                 seconds++;
                 runtime_formatted = FormatTimeRun(seconds);
-                iterations_string_freq = to_string(iterations * multiplier);
-                iterations_string = findsum(iterations_string, iterations_string_freq);
-                digits = iterations_string.length();
 
-                freq_digits = iterations_string_freq.length();
+                totalFreq = MultiplyStrings(to_string(freq), to_string(multiplier));
+                totalFreq = MultiplyStrings(totalFreq, to_string(hashMultiplier));
+                totalIterations = FindSum(totalIterations, totalFreq);
+
+                digits = totalIterations.length();
+                freqDigits = totalFreq.length();
+                freq = 0;
 
                 if (suffix_value == "EXP")
                 {
                     std::cout << "[" + runtime_formatted + "]"
                               << " (" << setprecision(3) << fixed
-                              << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                              << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3)) << "x10^" << freq_digits - 1
+                              << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                              << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
                               << " Hz): " << intention << "     \r" << std::flush;
                 }
                 else // suffix_value = "HZ"
                 {
                     std::cout << "[" + runtime_formatted + "]"
-                              << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                              << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                              << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
+                              << display_suffix(totalFreq, freqDigits - 1, "Frequency")
                               << "Hz): " << intention << "     \r" << std::flush;
                 }
-                iterations = 0;
+
                 if (runtime_formatted == duration)
                 {
                     std::cout << endl
@@ -1074,15 +1120,16 @@ int main(int argc, char **argv)
                     {
                         std::cout << "[" + runtime_formatted + "]"
                                   << " (" << setprecision(3) << fixed
-                                  << (stoull(iterations_string.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
-                                  << "0 Hz): " << intention << "      \r" << std::flush;
+                                  << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                                  << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
+                                  << " Hz): " << intention << "     \r" << std::flush;
                     }
                     else // suffix_value = "HZ"
                     {
                         std::cout << "[" + runtime_formatted + "]"
-                                  << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                                                                                                            "0 Hz): "
-                                  << intention << "      \r" << std::flush;
+                                  << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
+                                  << display_suffix(totalFreq, freqDigits - 1, "Frequency")
+                                  << "Hz): " << intention << "     \r" << std::flush;
                     }
                     while ((chrono::duration_cast<chrono::seconds>(end - start).count() < restfor_int))
                     {
@@ -1107,10 +1154,12 @@ int main(int argc, char **argv)
                 {
                     for (int i = 0; i < frequency_int; ++i)
                     {
-                        process_intention = intention_value; // This is the Intention Repeater call that
-                                                             // actually does the work with the Servitor
-                                                             // [HR6819].
-                        ++iterations;
+                        // Clear previous value and reuse the allocated space
+                        process_intention.clear();
+                        // Append the fixed part and the changing part
+                        process_intention.append(intention_value);
+                        // process_intention.append(to_string(iterations));
+                        ++freq;
                         end = std::chrono::high_resolution_clock::now();
                         if (std::chrono::duration_cast<std::chrono::seconds>(end - start).count() == 1)
                             break;
@@ -1121,27 +1170,30 @@ int main(int argc, char **argv)
             }
             ++seconds;
             runtime_formatted = FormatTimeRun(seconds);
-            iterations_string_freq = to_string(iterations);
-            iterations_string = findsum(iterations_string, iterations_string_freq);
-            digits = iterations_string.length();
+            totalFreq = MultiplyStrings(to_string(freq), to_string(multiplier));
+            totalFreq = MultiplyStrings(totalFreq, to_string(hashMultiplier));
+            totalIterations = FindSum(totalIterations, totalFreq);
 
-            freq_digits = iterations_string_freq.length();
+            digits = totalIterations.length();
+            freqDigits = totalFreq.length();
+            freq = 0;
 
             if (suffix_value == "EXP")
             {
                 std::cout << "[" + runtime_formatted + "]"
-                          << " (" << setprecision(3) << fixed << (stoull(iterations_string.substr(0, 4))) / pow(10, 3)
-                          << "x10^" << digits - 1 << " / " << (stoull(iterations_string_freq.substr(0, 4)) / pow(10, 3))
-                          << "x10^" << freq_digits - 1 << " Hz): " << intention << "     \r" << std::flush;
+                          << " (" << setprecision(3) << fixed
+                          << (stoull(totalIterations.substr(0, 4))) / pow(10, 3) << "x10^" << digits - 1 << " / "
+                          << (stoull(totalFreq.substr(0, 4)) / pow(10, 3)) << "x10^" << freqDigits - 1
+                          << " Hz): " << intention << "     \r" << std::flush;
             }
             else // suffix_value = "HZ"
             {
                 std::cout << "[" + runtime_formatted + "]"
-                          << " (" << display_suffix(iterations_string, digits - 1, "Iterations") << " / "
-                          << display_suffix(iterations_string_freq, freq_digits - 1, "Frequency")
+                          << " (" << display_suffix(totalIterations, digits - 1, "Iterations") << " / "
+                          << display_suffix(totalFreq, freqDigits - 1, "Frequency")
                           << "Hz): " << intention << "     \r" << std::flush;
             }
-            iterations = 0;
+
             if (runtime_formatted == duration)
             {
                 std::cout << endl
