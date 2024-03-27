@@ -10,7 +10,7 @@ def speak(text):
 def listen_for_command():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("Listening for command...")
+        print("Listening for command 'run repeater'...")
         audio = r.listen(source)
 
     try:
