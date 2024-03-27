@@ -1,24 +1,21 @@
 name: C/C++ CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        Plan: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Repeater compile
-#      run: g++ -O3 intention_repeater_max_5.7.cpp
-    - name: Make swap
- #     run: (sudo fallocate -l 14G /swapfile) && (sudo chmod 600 /swapfile) && (sudo mkswap /swapfile) && (sudo swapon /swapfile)
-    - name: Repeater run
-  #    run: ./a.out --dur 05:57:00 --imem 20 --intent "With Source, I am a 5D Light Being full of bliss."
+    - uses: actions/checkout@v2
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
