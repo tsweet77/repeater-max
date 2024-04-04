@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.15 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.16 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -174,17 +174,24 @@ std::string compressMessage(const std::string &message)
 
 void readFileContents(const std::string &filename, std::string &intention_file_contents)
 {
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios::binary);
     if (!file)
     {
         std::cerr << "File not found" << std::endl;
         std::exit(EXIT_FAILURE); // Terminate the program
     }
 
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    intention_file_contents = buffer.str();
+    std::ostringstream buffer;
+    char ch;
+    while (file.get(ch))
+    {
+        if (ch != '\0')
+        {
+            buffer.put(ch);
+        }
+    }
 
+    intention_file_contents = buffer.str();
     file.close();
 }
 
@@ -303,7 +310,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.15 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.16 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -796,7 +803,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.15 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX v5.16 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
