@@ -32,3 +32,4 @@
 3/26/2024 v5.11 Allowing for file import. Display hashing multiplier and compression amount.
 3/26/2024 v5.13 Displaying the Multiplier value.
 3/26/2024 v5.14 Fixed issue with segmentation error for assigning too much memory.
+4/4/2024 v5.16 Updated to remove null characters from imported binary files.
