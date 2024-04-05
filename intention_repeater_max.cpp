@@ -327,7 +327,7 @@ void create_nesting_files()
     }
     myfile.close();
 
-    for (int filenum = 1; filenum <= 100; filenum++)
+    for (int filenum = 2; filenum <= 100; filenum++)
     {
         std::string filename = "NEST-" + std::to_string(filenum) + ".TXT";
         myfile.open(filename);
@@ -428,10 +428,9 @@ Website: https://www.intentionrepeater.com
 
 std::string getBoostIntention(std::string param_boostlevel)
 {
-    std::string NESTING_FILE_CONTENTS;
-
     // Convert param_boostlevel to an integer
     int boostLevel = std::stoi(param_boostlevel);
+    std::ostringstream NESTING_FILE_CONTENTS;
 
     // Check if boostLevel is within the valid range (1 to 100)
     if (boostLevel < 1 || boostLevel > 100)
@@ -443,36 +442,26 @@ std::string getBoostIntention(std::string param_boostlevel)
     for (int i = 1; i <= boostLevel; i++)
     {
         std::string fileName = "NEST-" + std::to_string(i) + ".TXT";
-        std::ifstream file(fileName);
+        std::ifstream file1(fileName);
 
-        if (file.is_open())
-        {
-            std::ostringstream fileStream;
-            fileStream << file.rdbuf();
-            NESTING_FILE_CONTENTS += fileStream.str();
-            file.close();
-        }
-        else
-        {
+
+        if (!file1.is_open()) {
             return "0";
         }
+
+        NESTING_FILE_CONTENTS << file1.rdbuf();
+        file1.close();
+
+        std::ifstream file2("INTENTIONS.TXT");
+        if (!file2.is_open()) {
+            return "0";
+        }
+
+        NESTING_FILE_CONTENTS << file2.rdbuf();
+        file2.close();
     }
 
-    // Add contents of "INTENTIONS.TXT" to NESTING_FILE_CONTENTS
-    std::ifstream intentionsFile("INTENTIONS.TXT");
-    if (intentionsFile.is_open())
-    {
-        std::ostringstream intentionsStream;
-        intentionsStream << intentionsFile.rdbuf();
-        NESTING_FILE_CONTENTS += intentionsStream.str();
-        intentionsFile.close();
-    }
-    else
-    {
-        return "0";
-    }
-
-    return NESTING_FILE_CONTENTS;
+    return NESTING_FILE_CONTENTS.str();
 }
 
 std::string FindSum(std::string a, std::string b)
@@ -791,7 +780,7 @@ int main(int argc, char **argv)
 
     if (param_boostlevel != "0")
     {
-        intention = "NEST-" + param_boostlevel + ".TXT"; //getBoostIntention(param_boostlevel);
+        intention = getBoostIntention(param_boostlevel);
         intention_display = "Using Nesting File Quantumly: NEST-" + param_boostlevel + ".TXT with INTENTIONS.TXT";
     }
 
