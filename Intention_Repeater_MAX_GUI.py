@@ -1,149 +1,189 @@
-import tkinter as tk
-from tkinter import ttk
+import os
 import subprocess
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+import psutil
 
-def start_repeater():
-    intention = intention_entry.get("1.0", tk.END).strip()
-    duration = duration_entry.get()
-    ram_usage = ram_slider.get()
-    frequency = frequency_entry.get()
-    suffix = suffix_var.get()
-    use_hololink = hololink_var.get()
-    boost_level = boost_level_entry.get()
-    use_compression = compression_var.get()
-    use_hashing = hashing_var.get()
-    filename = filename_entry.get()
+class IntentionRepeaterGUI:
+    def __init__(self, master):
+        self.master = master
+        master.title("Intention Repeater MAX GUI")
+        self.process = None
 
-    command = ["intention_repeater_max.exe"]
-    if filename:
-        command.extend(["--file", "\"" + filename + "\""])
-    elif intention:
-        command.extend(["--intent", "\"" + intention + "\""])
-    if duration:
-        command.extend(["--dur", "\"" + duration + "\""])
-    if ram_usage:
-        command.extend(["--imem", str(ram_usage)])
-    if frequency:
-        command.extend(["--freq", "\"" + frequency + "\""])
-    if suffix:
-        command.extend(["--suffix", "\"" + suffix + "\""])
-    if use_hololink:
-        command.append("--usehololink")
-    if boost_level:
-        command.extend(["--boostlevel", boost_level])
-    if use_compression:
-        command.extend(["--compress", "y"])
-    else:
-        command.extend(["--compress", "n"])
-    if use_hashing:
-        command.extend(["--hashing", "y"])
-    else:
-        command.extend(["--hashing", "n"])
+        # Create input fields and labels
+        self.intention_label = ttk.Label(master, text="Intention:")
+        self.intention_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        self.intention_entry = ttk.Entry(master, width=50)
+        self.intention_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    # Print the command 
-    print("Command:", " ".join(command)) 
+        self.duration_label = ttk.Label(master, text="Duration (HH:MM:SS):")
+        self.duration_label.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        self.duration_entry = ttk.Entry(master, width=20)
+        self.duration_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
-    # Launch the process
-    global process
-    process = subprocess.Popen(command)
+        self.ram_label = ttk.Label(master, text="RAM Usage (GB):")
+        self.ram_label.grid(row=2, column=0, padx=5, pady=5, sticky="e")
+        self.ram_entry = ttk.Entry(master, width=10)
+        self.ram_entry.insert(0, "1.0")
+        self.ram_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
-def stop_repeater():
-    if process:
-        process.terminate()
+        self.freq_label = ttk.Label(master, text="Frequency (Hz):")
+        self.freq_label.grid(row=3, column=0, padx=5, pady=5, sticky="e")
+        self.freq_entry = ttk.Entry(master, width=10)
+        self.freq_entry.insert(0, "0")
+        self.freq_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
-def update_ram_label(val):
-    global ram_value_label
-    if 'ram_value_label' not in globals():
-        ram_value_label = ttk.Label(parameter_frame, text="")
-        ram_value_label.grid(row=1, column=2, padx=5, pady=5)
-    ram_value_label.config(text=f"{ram_slider.get():.1f} GB")
+        self.boost_label = ttk.Label(master, text="Boost Level (1-100):")
+        self.boost_label.grid(row=4, column=0, padx=5, pady=5, sticky="e")
+        self.boost_entry = ttk.Entry(master, width=10)
+        self.boost_entry.insert(0, "0")
+        self.boost_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
-# Main Window
+        self.amplify_label = ttk.Label(master, text="Amplification:")
+        self.amplify_label.grid(row=5, column=0, padx=5, pady=5, sticky="e")
+        self.amplify_entry = ttk.Entry(master, width=20)
+        self.amplify_entry.insert(0, "1000000000")
+        self.amplify_entry.grid(row=5, column=1, padx=5, pady=5, sticky="w")
+
+        self.rest_every_label = ttk.Label(master, text="Rest Every (seconds):")
+        self.rest_every_label.grid(row=6, column=0, padx=5, pady=5, sticky="e")
+        self.rest_every_entry = ttk.Entry(master, width=10)
+        self.rest_every_entry.insert(0, "0")
+        self.rest_every_entry.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+
+        self.rest_for_label = ttk.Label(master, text="Rest For (seconds):")
+        self.rest_for_label.grid(row=7, column=0, padx=5, pady=5, sticky="e")
+        self.rest_for_entry = ttk.Entry(master, width=10)
+        self.rest_for_entry.insert(0, "0")
+        self.rest_for_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+
+        self.file_label = ttk.Label(master, text="Intention File:")
+        self.file_label.grid(row=8, column=0, padx=5, pady=5, sticky="e")
+        self.file_entry = ttk.Entry(master, width=50)
+        self.file_entry.grid(row=8, column=1, padx=5, pady=5)
+        self.file_button = ttk.Button(master, text="Browse", command=self.browse_file)
+        self.file_button.grid(row=8, column=2, padx=5, pady=5)
+
+        # Create checkboxes
+        self.holo_var = tk.BooleanVar()
+        self.holo_checkbox = ttk.Checkbutton(master, text="Use Holo-Link", variable=self.holo_var)
+        self.holo_checkbox.grid(row=9, column=0, padx=5, pady=5, sticky="w")
+
+        self.hashing_var = tk.BooleanVar()
+        self.hashing_checkbox = ttk.Checkbutton(master, text="Use Hashing", variable=self.hashing_var)
+        self.hashing_checkbox.grid(row=9, column=1, padx=5, pady=5, sticky="w")
+
+        self.compress_var = tk.BooleanVar()
+        self.compress_checkbox = ttk.Checkbutton(master, text="Use Compression", variable=self.compress_var)
+        self.compress_checkbox.grid(row=10, column=0, padx=5, pady=5, sticky="w")
+
+        # Create color dropdown
+        self.color_label = ttk.Label(master, text="Color:")
+        self.color_label.grid(row=11, column=0, padx=5, pady=5, sticky="e")
+        self.color_var = tk.StringVar()
+        self.color_dropdown = ttk.Combobox(master, textvariable=self.color_var, values=["WHITE", "RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN"])
+        self.color_dropdown.current(0)
+        self.color_dropdown.grid(row=11, column=1, padx=5, pady=5, sticky="w")
+
+        # Create suffix dropdown
+        self.suffix_label = ttk.Label(master, text="Suffix:")
+        self.suffix_label.grid(row=12, column=0, padx=5, pady=5, sticky="e")
+        self.suffix_var = tk.StringVar()
+        self.suffix_dropdown = ttk.Combobox(master, textvariable=self.suffix_var, values=["HZ", "EXP"])
+        self.suffix_dropdown.current(0)
+        self.suffix_dropdown.grid(row=12, column=1, padx=5, pady=5, sticky="w")
+
+        # Create timer dropdown
+        self.timer_label = ttk.Label(master, text="Timer:")
+        self.timer_label.grid(row=13, column=0, padx=5, pady=5, sticky="e")
+        self.timer_var = tk.StringVar()
+        self.timer_dropdown = ttk.Combobox(master, textvariable=self.timer_var, values=["EXACT", "INEXACT"])
+        self.timer_dropdown.current(0)
+        self.timer_dropdown.grid(row=13, column=1, padx=5, pady=5, sticky="w")
+
+        # Create buttons
+        self.run_button = ttk.Button(master, text="Run", command=self.run_intention_repeater)
+        self.run_button.grid(row=14, column=0, padx=5, pady=10)
+
+        self.quit_button = ttk.Button(master, text="Quit", command=self.quit_program)
+        self.quit_button.grid(row=14, column=1, padx=5, pady=10)
+
+    def browse_file(self):
+        file_path = filedialog.askopenfilename()
+        self.file_entry.delete(0, tk.END)
+        self.file_entry.insert(0, file_path)
+
+    def run_intention_repeater(self):
+        intention = self.intention_entry.get()
+        duration = self.duration_entry.get()
+        ram = self.ram_entry.get()
+        freq = self.freq_entry.get()
+        boost = self.boost_entry.get()
+        amplify = self.amplify_entry.get()
+        rest_every = self.rest_every_entry.get()
+        rest_for = self.rest_for_entry.get()
+        file_path = self.file_entry.get()
+        use_holo = self.holo_var.get()
+        use_hashing = self.hashing_var.get()
+        use_compress = self.compress_var.get()
+        color = self.color_var.get()
+        suffix = self.suffix_var.get()
+        timer = self.timer_var.get()
+
+        command = ["intention_repeater_max.exe"]
+
+        if intention:
+            command.extend(["--intent", "\"" + intention + "\""])
+        if duration:
+            command.extend(["--dur", "\"" + duration + "\""])
+        if ram:
+            command.extend(["--imem", ram])
+        if freq:
+            command.extend(["--freq", freq])
+        if boost:
+            command.extend(["--boostlevel", boost])
+        if amplify:
+            command.extend(["--amplify", amplify])
+        if rest_every:
+            command.extend(["--restevery", rest_every])
+        if rest_for:
+            command.extend(["--restfor", rest_for])
+        if file_path:
+            command.extend(["--file", "\"" + file_path + "\""])
+        if use_holo:
+            command.append("--usehololink")
+        if use_hashing:
+            command.extend(["--hashing", "y"])
+        else:
+            command.extend(["--hashing", "n"])
+        if use_compress:
+            command.extend(["--compress", "y"])
+        else:
+            command.extend(["--compress", "n"])
+        if color:
+            command.extend(["--color", color])
+        if suffix:
+            command.extend(["--suffix", suffix])
+        if timer:
+            command.extend(["--timer", timer])
+
+        command_str = " ".join(command)
+
+        try:
+            # Launch the process
+            self.process = subprocess.Popen(command_str)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "intention_repeater_max.exe not found.")
+    
+    def quit_program(self):
+        if self.process:
+            process = psutil.Process(self.process.pid)
+            for proc in process.children(recursive=True):
+                proc.kill()
+            process.kill()
+            print("\n")  # Print a newline in the terminal
+        self.master.quit()
+
 root = tk.Tk()
-root.title("Intention Repeater MAX GUI")
-
-# Intention Input Frame
-intention_frame = ttk.Frame(root)
-intention_frame.pack(padx=10, pady=10)
-
-intention_label = ttk.Label(intention_frame, text="Intention:")
-intention_label.pack(side=tk.LEFT)
-
-intention_entry = tk.Text(intention_frame, height=3)
-intention_entry.pack(side=tk.LEFT)
-
-# Filename Input
-filename_label = ttk.Label(intention_frame, text="Filename (optional):")
-filename_label.pack(side=tk.LEFT, padx=5)
-
-filename_entry = ttk.Entry(intention_frame)
-filename_entry.pack(side=tk.LEFT)
-
-# Parameter Frame
-parameter_frame = ttk.Frame(root)
-parameter_frame.pack(padx=10, pady=10)
-
-# Duration
-duration_label = ttk.Label(parameter_frame, text="Duration (HH:MM:SS) [Optional]:")
-duration_label.grid(row=0, column=0, padx=5, pady=5)
-duration_entry = ttk.Entry(parameter_frame)
-duration_entry.grid(row=0, column=1, padx=5, pady=5)
-
-# RAM Usage
-ram_label = ttk.Label(parameter_frame, text="RAM Usage (GB):")
-ram_label.grid(row=1, column=0, padx=5, pady=5)
-
-ram_slider = ttk.Scale(parameter_frame, from_=1.0, to=8.0, orient=tk.HORIZONTAL, command=update_ram_label)
-ram_slider.set(1.0)
-ram_slider.grid(row=1, column=1, padx=5, pady=5)
-
-ram_value_label = ttk.Label(parameter_frame, text="1.0 GB")
-ram_value_label.grid(row=1, column=2, padx=5, pady=5)
-
-# Frequency
-frequency_label = ttk.Label(parameter_frame, text="Frequency (Hz) [Optional]:")
-frequency_label.grid(row=2, column=0, padx=5, pady=5)
-frequency_entry = ttk.Entry(parameter_frame)
-frequency_entry.grid(row=2, column=1, padx=5, pady=5)
-
-# Suffix
-suffix_label = ttk.Label(parameter_frame, text="Suffix:")
-suffix_label.grid(row=3, column=0, padx=5, pady=5)
-suffix_var = tk.StringVar(value="HZ")
-suffix_option = ttk.OptionMenu(parameter_frame, suffix_var, "HZ", "HZ", "EXP")
-suffix_option.grid(row=3, column=1, padx=5, pady=5)
-
-# Holo-Link
-hololink_var = tk.BooleanVar()
-hololink_check = ttk.Checkbutton(parameter_frame, text="Use Holo-Link", variable=hololink_var)
-hololink_check.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
-
-# Boosting
-boost_label = ttk.Label(parameter_frame, text="Boost Level [Optional]:")
-boost_label.grid(row=5, column=0, padx=5, pady=5)
-boost_level_entry = ttk.Entry(parameter_frame)
-boost_level_entry.grid(row=5, column=1, padx=5, pady=5)
-
-# Compression
-compression_var = tk.BooleanVar()
-compression_check = ttk.Checkbutton(parameter_frame, text="Use Compression", variable=compression_var)
-compression_check.grid(row=6, column=0, columnspan=2, padx=5, pady=5)
-
-# Hashing 
-hashing_var = tk.BooleanVar()
-hashing_check = ttk.Checkbutton(parameter_frame, text="Use Hashing", variable=hashing_var)
-hashing_check.grid(row=7, column=0, columnspan=2, padx=5, pady=5) 
- 
-# Control Buttons Frame 
-button_frame = ttk.Frame(root)
-button_frame.pack(pady=10)
-
-start_button = ttk.Button(button_frame, text="Start", command=start_repeater) 
-start_button.pack(side=tk.LEFT, padx=5)
-
-stop_button = ttk.Button(button_frame, text="Stop", command=stop_repeater)
-stop_button.pack(side=tk.LEFT)
-
-process = None 
-
+gui = IntentionRepeaterGUI(root)
 root.mainloop()
