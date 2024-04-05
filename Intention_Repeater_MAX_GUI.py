@@ -64,7 +64,7 @@ class IntentionRepeaterGUI:
         self.file_button = ttk.Button(master, text="Browse", command=self.browse_file)
         self.file_button.grid(row=8, column=2, padx=5, pady=5)
 
-        # Create checkboxes
+         # Create checkboxes
         self.holo_var = tk.BooleanVar()
         self.holo_checkbox = ttk.Checkbutton(master, text="Use Holo-Link", variable=self.holo_var)
         self.holo_checkbox.grid(row=9, column=0, padx=5, pady=5, sticky="w")
@@ -75,15 +75,39 @@ class IntentionRepeaterGUI:
 
         self.compress_var = tk.BooleanVar()
         self.compress_checkbox = ttk.Checkbutton(master, text="Use Compression", variable=self.compress_var)
-        self.compress_checkbox.grid(row=10, column=0, padx=5, pady=5, sticky="w")
+        self.compress_checkbox.grid(row=9, column=2, padx=5, pady=5, sticky="w")
 
         # Create color dropdown
         self.color_label = ttk.Label(master, text="Color:")
-        self.color_label.grid(row=11, column=0, padx=5, pady=5, sticky="e")
+        self.color_label.grid(row=10, column=0, padx=5, pady=5, sticky="e")
         self.color_var = tk.StringVar()
-        self.color_dropdown = ttk.Combobox(master, textvariable=self.color_var, values=["WHITE", "RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN"])
+        self.color_dropdown = ttk.Combobox(master, textvariable=self.color_var, values=[
+            "WHITE",
+            "BLACK",
+            "BLUE",
+            "CYAN",
+            "DARKGRAY",
+            "GREEN",
+            "LIGHTBLUE",
+            "LIGHTCYAN",
+            "LIGHTGRAY",
+            "LIGHTGREEN",
+            "LIGHTMAGENTA",
+            "LIGHTRED",
+            "LIGHTYELLOW",
+            "MAGENTA",
+            "RED",
+            "YELLOW"
+        ])
         self.color_dropdown.current(0)
-        self.color_dropdown.grid(row=11, column=1, padx=5, pady=5, sticky="w")
+        self.color_dropdown.grid(row=10, column=1, padx=5, pady=5, sticky="w")
+
+        # Create Holo-Link and Nesting Files buttons
+        self.holo_link_button = ttk.Button(master, text="Create Holo-Link Files", command=self.create_holo_link_files)
+        self.holo_link_button.grid(row=11, column=0, padx=5, pady=5)
+
+        self.nesting_files_button = ttk.Button(master, text="Create Nesting Files", command=self.create_nesting_files)
+        self.nesting_files_button.grid(row=11, column=1, padx=5, pady=5)
 
         # Create suffix dropdown
         self.suffix_label = ttk.Label(master, text="Suffix:")
@@ -170,19 +194,34 @@ class IntentionRepeaterGUI:
         command_str = " ".join(command)
 
         try:
-            # Launch the process
             self.process = subprocess.Popen(command_str)
+            self.run_button.config(state=tk.DISABLED)
         except FileNotFoundError:
             messagebox.showerror("Error", "intention_repeater_max.exe not found.")
     
     def quit_program(self):
         if self.process:
-            process = psutil.Process(self.process.pid)
-            for proc in process.children(recursive=True):
-                proc.kill()
-            process.kill()
-            print("\n")  # Print a newline in the terminal
+            try:
+                process = psutil.Process(self.process.pid)
+                for proc in process.children(recursive=True):
+                    proc.kill()
+                process.kill()
+                print("\n")  # Print a newline in the terminal
+            except psutil.NoSuchProcess:
+                pass
         self.master.quit()
+
+    def create_holo_link_files(self):
+        try:
+            subprocess.run(["intention_repeater_max.exe", "--createhololinkfiles"])
+        except FileNotFoundError:
+            messagebox.showerror("Error", "intention_repeater_max.exe not found.")
+
+    def create_nesting_files(self):
+        try:
+            subprocess.run(["intention_repeater_max.exe", "--createnestingfiles"])
+        except FileNotFoundError:
+            messagebox.showerror("Error", "intention_repeater_max.exe not found.")
 
 root = tk.Tk()
 gui = IntentionRepeaterGUI(root)
