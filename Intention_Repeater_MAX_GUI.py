@@ -8,6 +8,33 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.tooltip import ToolTip
 
 class IntentionRepeaterGUI:
+    def disable_widgets(self):
+        # Assuming widget_variable_names is an array of widget names as strings
+        widget_variable_names = [
+            'suffix_var', 'rest_every_entry', 'nesting_files_button', 'duration_label',
+            'color_label', 'file_button', 'compress_checkbox', 'boost_label', 'file_label',
+            'rest_for_label', 'compress_var', 'holo_var', 'freq_label', 'color_dropdown',
+            'timer_var', 'rest_for_entry', 'run_button', 'amplify_label', 'holo_link_button',
+            'hashing_checkbox', 'boost_entry', 'intention_entry', 'ram_entry', 'ram_label',
+            'rest_every_label', 'timer_label', 'hashing_var', 'suffix_label', 'intention_label',
+            'file_entry', 'holo_checkbox', 'quit_button', 'amplify_entry', 'suffix_dropdown',
+            'duration_entry', 'timer_dropdown', 'freq_entry', 'color_var'
+        ]
+
+        for widget_name in widget_variable_names:
+            if widget_name != 'quit_button':  # Assuming 'quit_button' is the name of your Quit button
+                widget = getattr(self, widget_name)  # Get the widget object by name
+                if hasattr(widget, 'config'):
+                    widget.config(state="disabled")
+
+
+    def create_context_menu(self, entry_widget):
+        context_menu = tk.Menu(self.master, tearoff=0)
+        context_menu.add_command(label="Copy", command=lambda: self.master.clipboard_clear() or self.master.clipboard_append(entry_widget.get()))
+        context_menu.add_command(label="Paste", command=lambda: entry_widget.insert(tk.INSERT, self.master.clipboard_get()))
+        entry_widget.bind("<Button-3>", lambda event: context_menu.post(event.x_root, event.y_root))
+
+
     def __init__(self, master):
         self.master = master
         master.title("Intention Repeater MAX GUI")
@@ -154,6 +181,10 @@ class IntentionRepeaterGUI:
         self.quit_button = ttk.Button(master, text="Quit", command=self.quit_program)
         self.quit_button.grid(row=12, column=3, padx=5, pady=10, sticky="w")
 
+    def on_run_clicked(self):
+        self.disable_widgets()  # Disable widgets
+        # Your existing code to launch intention_repeater_max.exe goes here
+
     def browse_file(self):
         file_path = filedialog.askopenfilename()
         self.file_entry.delete(0, tk.END)
@@ -197,6 +228,8 @@ class IntentionRepeaterGUI:
                 open("INTENTIONS.TXT", "w").close()
                 os.startfile("INTENTIONS.TXT")
                 return
+            
+        self.on_run_clicked()
 
         command = ["intention_repeater_max.exe"]
 
