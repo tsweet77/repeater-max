@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.18 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.19 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -30,6 +30,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <thread>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -349,7 +350,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.18 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.19 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -880,11 +881,11 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.18 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX v5.19 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
-    if (param_file == "X" and param_boostlevel == "0" and param_usehololink == "NO")
+    if (param_file == "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
         if (param_intention == "X")
         {
@@ -898,114 +899,116 @@ int main(int argc, char **argv)
             intention_display = intention;
         }
     }
-    else if (param_boostlevel == "0" and param_usehololink == "NO")
+    else if (param_boostlevel == "0" && param_usehololink == "NO")
     {
         readFileContents(param_file, intention);
         intention_display = "Contents of: " + param_file;
     }
 
-    if (param_freq == "0" && INTENTION_MULTIPLIER > 0)
+    if (frequency_int == 0)
     {
-        // ...
+        if (INTENTION_MULTIPLIER > 0) {
+            std::cout << loading_message << std::endl;
+            std::string temp = intention;
 
-        std::cout << loading_message << std::endl;
-        std::string temp = intention;
-
-       while (intention_value.length() < INTENTION_MULTIPLIER)
-        {
-            intention_value += intention;
-            ++multiplier;
-        }
-        --multiplier; // Account for having to reduce at the end.
-
-        long long int intention_value_length = intention_value.length();
-        long long int intention_length = intention.length();
-        long long int intention_length_val = intention_value_length - intention_length;
-
-        intention_value = intention_value.substr(0, intention_length_val);
-        digits = std::to_string(multiplier).length();
-    }
-
-    if (INTENTION_MULTIPLIER == 0)
-    {
-        intention_value = intention;
-        multiplier = 1;
-    }
-
-    if (param_hashing == "X")
-    {
-        std::cout << "Use Hashing (y/N): ";
-        std::getline(std::cin, useHashing);
-        std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
-    }
-    else
-    {
-        useHashing = param_hashing;
-        std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
-    }
-
-    if (param_compress == "X")
-    {
-        std::cout << "Use Compression (y/N): ";
-        std::getline(std::cin, useCompression);
-        std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
-    }
-    else
-    {
-        useCompression = param_compress;
-        std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
-    }
-
-    if (multiplier > 0)
-    {
-        std::cout << "Multiplier: " << display_suffix(std::to_string(multiplier), digits - 1, "Iterations") << std::endl;
-    }
-
-    if (useHashing == "y" || useHashing == "yes")
-    {
-        std::cout << "Hashing...          \r";
-        intention_hashed = picosha2::hash256_hex_string(intention_value);
-        if (INTENTION_MULTIPLIER > 0)
-        {
-            intention_value.clear();
             while (intention_value.length() < INTENTION_MULTIPLIER)
             {
-                intention_value += intention_hashed;
-                ++hashMultiplier;
+                intention_value += intention;
+                ++multiplier;
             }
+            --multiplier; // Account for having to reduce at the end.
+
+            long long int intention_value_length = intention_value.length();
+            long long int intention_length = intention.length();
+            long long int intention_length_val = intention_value_length - intention_length;
+
+            intention_value = intention_value.substr(0, intention_length_val);
+            digits = std::to_string(multiplier).length();
+        } else if (INTENTION_MULTIPLIER == 0) {
+            intention_value = intention;
+            multiplier = 1;
+        }
+
+        if (param_hashing == "X")
+        {
+            std::cout << "Use Hashing (y/N): ";
+            std::getline(std::cin, useHashing);
+            std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
         }
         else
         {
-            intention_value = intention_hashed;
-            hashMultiplier = 1;
+            useHashing = param_hashing;
+            std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
         }
 
-        digits = std::to_string(hashMultiplier).length();
-        std::cout << "Hash Multiplier: " << display_suffix(std::to_string(hashMultiplier), digits - 1, "Iterations") << std::endl;
-    }
-    else
-    {
+        if (param_compress == "X")
+        {
+            std::cout << "Use Compression (y/N): ";
+            std::getline(std::cin, useCompression);
+            std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+        }
+        else
+        {
+            useCompression = param_compress;
+            std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+        }
+
+        if (multiplier > 0)
+        {
+            std::cout << "Multiplier: " << display_suffix(std::to_string(multiplier), digits - 1, "Iterations") << std::endl;
+        }
+
+        if (useHashing == "y" || useHashing == "yes")
+        {
+            std::cout << "Hashing...          \r";
+            intention_hashed = picosha2::hash256_hex_string(intention_value);
+            if (INTENTION_MULTIPLIER > 0)
+            {
+                intention_value.clear();
+                while (intention_value.length() < INTENTION_MULTIPLIER)
+                {
+                    intention_value += intention_hashed;
+                    ++hashMultiplier;
+                }
+            }
+            else
+            {
+                intention_value = intention_hashed;
+                hashMultiplier = 1;
+            }
+
+            digits = std::to_string(hashMultiplier).length();
+            std::cout << "Hash Multiplier: " << display_suffix(std::to_string(hashMultiplier), digits - 1, "Iterations") << std::endl;
+        }
+        else
+        {
+            hashMultiplier = 1;
+        }
+        long long int originalIntentionSize, compressedIntentionSize, compressionFactor;
+        int compressionFactor_digits, compressedIntentionSize_digits, originalIntention_digits;
+
+        if (useCompression == "y" || useCompression == "yes")
+        {
+            std::cout << "Compressing...          \r";
+            originalIntentionSize = intention_value.length() * 2;
+            intention_value = compressMessage(intention_value);
+            compressedIntentionSize = intention_value.length() * 2;
+            compressionFactor = (originalIntentionSize / compressedIntentionSize);
+
+            compressionFactor_digits = std::to_string(compressionFactor).length();
+            compressedIntentionSize_digits = std::to_string(compressedIntentionSize).length();
+            originalIntention_digits = std::to_string(originalIntentionSize).length();
+
+            std::cout << "Compression: " << display_suffix(std::to_string(compressionFactor), compressionFactor_digits - 1, "Iterations") << "X ["
+                    << display_suffix(std::to_string(originalIntentionSize), originalIntention_digits - 1, "Frequency") << "B -> "
+                    << display_suffix(std::to_string(compressedIntentionSize), compressedIntentionSize_digits - 1, "Frequency") << "B]     " << std::endl;
+        }
+    } else { // freq > 0
+        multiplier = 1;
         hashMultiplier = 1;
-    }
-
-    long long int originalIntentionSize, compressedIntentionSize, compressionFactor;
-    int compressionFactor_digits, compressedIntentionSize_digits, originalIntention_digits;
-
-    if (useCompression == "y" || useCompression == "yes")
-    {
-        std::cout << "Compressing...          \r";
-        originalIntentionSize = intention_value.length() * 2;
-        intention_value = compressMessage(intention_value);
-        compressedIntentionSize = intention_value.length() * 2;
-        compressionFactor = (originalIntentionSize / compressedIntentionSize);
-
-        compressionFactor_digits = std::to_string(compressionFactor).length();
-        compressedIntentionSize_digits = std::to_string(compressedIntentionSize).length();
-        originalIntention_digits = std::to_string(originalIntentionSize).length();
-
-        std::cout << "Compression: " << display_suffix(std::to_string(compressionFactor), compressionFactor_digits - 1, "Iterations") << "X ["
-                  << display_suffix(std::to_string(originalIntentionSize), originalIntention_digits - 1, "Frequency") << "B -> "
-                  << display_suffix(std::to_string(compressedIntentionSize), compressedIntentionSize_digits - 1, "Frequency") << "B]     " << std::endl;
+        useCompression = "n";
+        useHashing = "n";
+        intention_value = intention;
     }
 
     duration = param_duration;
@@ -1015,7 +1018,7 @@ int main(int argc, char **argv)
     auto start = std::chrono::high_resolution_clock::now();
     auto end = std::chrono::high_resolution_clock::now();
 
-    if (param_freq == "0")
+    if (frequency_int == 0)
     {
         if (param_timer == "EXACT")
         {
@@ -1190,25 +1193,34 @@ int main(int argc, char **argv)
     {    // Begin param_freq nonzero
         do
         {
-            start = std::chrono::high_resolution_clock::now();
-            end = std::chrono::high_resolution_clock::now();
-            while ((std::chrono::duration_cast<std::chrono::seconds>(end - start).count() != 1))
+            //end = std::chrono::high_resolution_clock::now();
+            auto start = std::chrono::high_resolution_clock::now();
+            auto start2 = std::chrono::high_resolution_clock::now();
+            auto end = std::chrono::high_resolution_clock::now();
+
+            while (true)
             {
-                for (int i = 0; i < frequency_int; ++i)
-                {
-                    process_intention.clear();
-                    process_intention.append(intention_value);
-                    ++freq;
-                    end = std::chrono::high_resolution_clock::now();
-                    if (std::chrono::duration_cast<std::chrono::seconds>(end - start).count() == 1)
-                        break;
+                auto now = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::microseconds>(now - start2);
+
+                if (duration.count() >= 1000000 / frequency_int) {
+                    process_intention = intention_value;
+                    freq+=1;
+                    start2 = now;
                 }
+
+                std::this_thread::sleep_for(std::chrono::microseconds(100)); // sleep for 100 microseconds to reduce CPU usage
+
                 end = std::chrono::high_resolution_clock::now();
+
+                if (std::chrono::duration_cast<std::chrono::seconds>(end - start).count() >= 1) {
+                    break;
+                }
             }
+
             ++seconds;
             runtime_formatted = FormatTimeRun(seconds);
-            totalFreq = MultiplyStrings(std::to_string(freq), std::to_string(multiplier));
-            totalFreq = MultiplyStrings(totalFreq, std::to_string(hashMultiplier));
+            totalFreq = std::to_string(freq);
             totalIterations = FindSum(totalIterations, totalFreq);
 
             digits = totalIterations.length();
