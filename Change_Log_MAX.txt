@@ -35,3 +35,4 @@
 4/4/2024 v5.16 Updated to remove null characters from imported binary files.
 4/5/2024 v5.17 Updated to allow for importing holo-link file contents.
 4/9/2024 v5.21 Updated to fix missing displayed intention when running Holo-Link.
+4/16/2024 v5.7B Updated this old version which works better for some people to add in --file flag.
