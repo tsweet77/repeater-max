@@ -905,16 +905,11 @@ int main(int argc, char **argv)
          << endl;
     cout << "Boosting through Nested Files and Intention Multiplying created by Anthro Teacher." << endl;
 
-    if (param_usehololink == "YES")
-    {
-        param_intention = HSUPLINK_FILE;
-        cout << "USING HOLO-LINK." << endl
-             << endl;
-    }
+    //cout << "param_file: " << param_file << " param_boostlevel: " << param_boostlevel << " param_usehololink: " << param_usehololink << endl;
 
     if (param_file == "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
-        if (param_intention == "X")
+        if (param_intention == "")
         {
             std::cout << "Intention: ";
             std::getline(std::cin, intention);
@@ -930,6 +925,13 @@ int main(int argc, char **argv)
     {
         readFileContents(param_file, intention);
         intention_display = "Contents of: " + param_file;
+    }
+
+    if (param_usehololink == "YES")
+    {
+        param_intention = HSUPLINK_FILE;
+        cout << "USING HOLO-LINK." << endl
+             << endl;
     }
 
     if (param_freq == "0") // Only use multiplier if --freq flag is not set or
