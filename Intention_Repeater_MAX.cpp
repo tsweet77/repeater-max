@@ -1,12 +1,12 @@
 /*
-    Intention Repeater MAX v5.22 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.24 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
     Updated 3/29/2024 by Anthro Teacher and Claude 3 Opus.
-    To compile: g++ -O3 -Wall -static intention_repeater_max.cpp -o intention_repeater_max.exe -lz
+    To compile: g++ -O3 -Wall -static Intention_Repeater_MAX.cpp -o Intention_Repeater_MAX.exe -lz
     Repeats your intention up to 100 PHz to make things happen.
-    For help: intention_repeater_max.exe --help
+    For help: Intention_Repeater_MAX.exe --help
     Intention Repeater MAX is powered by a Servitor (20 Years / 2000+ hours in the making) [HR 6819 Black Hole System].
     Servitor Info: https://enlightenedstates.com/2017/04/07/servitor-just-powerful-spiritual-tool/
     Website: https://www.intentionrepeater.com/
@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <atomic>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -47,6 +48,8 @@ using namespace std::chrono;
 
 constexpr int ONE_MINUTE = 60;
 constexpr int ONE_HOUR = 3600;
+
+std::atomic<bool> interrupted(false);
 
 #ifdef _WIN32
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -380,7 +383,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.22 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.24 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -404,11 +407,12 @@ Optional Flags:
  o) --restfor or -r
  p) --compress or -x
  q) --hashing or -g
- r) --file or -f
- s) --help or -h
+ r) --file or -l
+ s) --help or -h or /?
 
 --dur = Duration in HH:MM:SS format. Default = Run until stopped manually.
 --imem = Specify how many GB of System RAM to use. Higher amount repeats faster, but takes longer to load. Default = 1.0.
+         Use --imem 0 to disable intention multiplying. May fix some issues with timer getting stuck.
 --intent = Intention. Default = Prompts the user for intention.
 --suffix = Specify whether to show regular (Hz) designator or scientific notation (Exp). Default = HZ.
 --timer = Specify INEXACT or EXACT. Default = EXACT.
@@ -428,18 +432,18 @@ Optional Flags:
 --help = Display this help.
 
 Example usage:
-intention_repeater_max.exe --dur "00:01:00" --imem 4.0 --intent "I am Love." --hashing y --compress y
+Intention_Repeater_MAX.exe --dur "00:01:00" --imem 4.0 --intent "I am Love." --hashing y --compress y
 
 Example usage with Holo-Link:
-1) intention_repeater_max.exe --createhololinkfiles
-2) intention_repeater_max.exe --usehololink --color LIGHTBLUE --suffix EXP --dur 00:01:00 --imem 4.0 --intent "I am calm."
+1) Intention_Repeater_MAX.exe --createhololinkfiles
+2) Intention_Repeater_MAX.exe --usehololink --color LIGHTBLUE --suffix EXP --dur 00:01:00 --imem 4.0 --intent "I am calm."
 
 Make sure to create your INTENTIONS.TXT file, in this folder, with your intentions, before running #2 above.  
 The --intent option is ignored when using --usehololink, which instead uses the INTENTIONS.TXT file.
 
 Example usage with Nesting Files:
-1) intention_repeater_max.exe --createnestingfiles
-2) intention_repeater_max.exe --color LIGHTBLUE --dur 00:01:00 --imem 4.0 --boostlevel 5
+1) Intention_Repeater_MAX.exe --createnestingfiles
+2) Intention_Repeater_MAX.exe --color LIGHTBLUE --dur 00:01:00 --imem 4.0 --boostlevel 5
 
 Make sure to create your INTENTIONS.TXT file, in this folder, with your intentions, and the Nesting Files before running #2 above.
 
@@ -693,7 +697,7 @@ int main(int argc, char **argv)
 {
     std::string intention, process_intention, intention_value, duration, param_duration;
     std::string param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color;
-    std::string param_usehololink, param_amplification, runtime_formatted, ref_rate;
+    std::string param_usehololink, param_amplification, runtime_formatted, ref_rate, file_contents="";
     std::string suffix_value = "HZ", HSUPLINK_FILE, param_restevery, param_restfor;
     std::string param_compress, param_hashing, useHashing, useCompression, intention_hashed;
     std::string totalIterations = "0", totalFreq = "0", param_file = "X", intention_display = "", loading_message="LOADING INTO MEMORY...";
@@ -719,7 +723,7 @@ int main(int argc, char **argv)
 
     for (int i = 1; i < argc; i++)
     {
-        if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
+        if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help") || !strcmp(argv[i], "/?"))
         {
             print_help();
             std::exit(EXIT_SUCCESS);
@@ -804,7 +808,7 @@ int main(int argc, char **argv)
             param_compress = argv[i + 1];
             std::transform(param_compress.begin(), param_compress.end(), param_compress.begin(), ::toupper);
         }
-        else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file"))
+        else if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--file"))
         {
             param_file = argv[i + 1];
         }
@@ -912,28 +916,62 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.22 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX v5.24 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
-    if (param_file == "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    {
+        // Open param_intent file and read the full file contents into intention
+        readFileContents(param_file, file_contents);
+        intention_display = "Contents of: " + param_file;
+    }
+    
+    if (param_boostlevel == "0" && param_usehololink == "NO")
     {
         if (param_intention == "X")
         {
-            std::cout << "Intention: ";
-            std::getline(std::cin, intention);
+            while (!interrupted)
+            {
+                std::cout << "Enter your Intention: ";
+                if (!std::getline(std::cin, intention))
+                {
+                    // If getline fails (e.g., due to an interrupt), break out of the loop immediately
+                    interrupted.store(true); // Ensure the flag is set if not already
+                    return 0;
+                }
+
+                if (!intention.empty())
+                {
+                    break; // Successfully got an intention, exit the loop
+                }
+                else if (!interrupted)
+                {
+                    // Only show the message if we're not interrupted
+                    std::cout << "The intention cannot be empty. Please try again.\n";
+                }
+            }
             intention_display = intention;
+            intention_value = intention;
         }
         else
         {
             intention = param_intention;
-            intention_display = intention;
+            intention_value = intention;
+            intention_display = param_intention;
         }
     }
-    else if (param_boostlevel == "0" && param_usehololink == "NO")
+
+    if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
-        readFileContents(param_file, intention);
-        intention_display = "Contents of: " + param_file;
+        //std::cout << "intention.length(): " << intention.length() << " file_contents.length(): " << file_contents.length() << "intention_value: " << intention_value << std::endl;
+        // Keep adding intention_value onto intention until its length is >= length of file_contents
+        while (intention.length() < file_contents.length())
+        {
+            intention += intention_value;
+        }
+        intention += file_contents;
+        intention_display += " (" + param_file + ")";
     }
 
     if (frequency_int == 0)
@@ -960,28 +998,46 @@ int main(int argc, char **argv)
             multiplier = 1;
         }
 
-        if (param_hashing == "X")
+        if (!interrupted && param_hashing == "X")
         {
             std::cout << "Use Hashing (y/N): ";
-            std::getline(std::cin, useHashing);
-            std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
+            if (!std::getline(std::cin, useHashing))
+            {
+                interrupted.store(true);
+                if (interrupted)
+                {
+                    // std::cerr << "Interrupted during hashing input. Exiting configuration.\n";
+                    return 0;
+                }
+            }
+            transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
         }
-        else
+        else if (!interrupted)
         {
             useHashing = param_hashing;
-            std::transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
+            transform(useHashing.begin(), useHashing.end(), useHashing.begin(), ::tolower);
+            //std::cout << "Use Hashing: " << useHashing << std::endl;
         }
 
-        if (param_compress == "X")
+        if (!interrupted && param_compress == "X")
         {
             std::cout << "Use Compression (y/N): ";
-            std::getline(std::cin, useCompression);
-            std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+            if (!std::getline(std::cin, useCompression))
+            {
+                interrupted.store(true);
+                if (interrupted)
+                {
+                    // std::cerr << "Interrupted during compression input. Exiting configuration.\n";
+                    return 0;
+                }
+            }
+            transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
         }
-        else
+        else if (!interrupted)
         {
             useCompression = param_compress;
-            std::transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+            transform(useCompression.begin(), useCompression.end(), useCompression.begin(), ::tolower);
+            //std::cout << "Use Compression: " << useCompression << std::endl;
         }
 
         if (multiplier > 0)
@@ -1091,7 +1147,7 @@ int main(int argc, char **argv)
                               << "Hz): " << intention_display << "     \r" << std::flush;
                 }
 
-                if (runtime_formatted == duration)
+                if (runtime_formatted == duration || interrupted)
                 {
                     std::cout << std::endl
                               << std::flush;
@@ -1185,7 +1241,7 @@ int main(int argc, char **argv)
                               << "Hz): " << intention_display << "     \r" << std::flush;
                 }
 
-                if (runtime_formatted == duration)
+                if (runtime_formatted == duration || interrupted)
                 {
                     std::cout << std::endl
                               << std::flush;
@@ -1284,7 +1340,7 @@ int main(int argc, char **argv)
                           << "Hz): " << intention_display << "     \r" << std::flush;
             }
 
-            if (runtime_formatted == duration)
+            if (runtime_formatted == duration || interrupted)
             {
                 std::cout << std::endl
                           << std::flush;

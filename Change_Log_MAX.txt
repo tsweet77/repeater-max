@@ -36,3 +36,4 @@
 4/5/2024 v5.17 Updated to allow for importing holo-link file contents.
 4/9/2024 v5.21 Updated to fix missing displayed intention when running Holo-Link.
 4/16/2024 v5.7B Updated this old version which works better for some people to add in --file flag.
+4/21/2024 v.5.24 Updated to allow for combining intention and file.

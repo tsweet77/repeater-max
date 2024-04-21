@@ -47,14 +47,14 @@ class IntentionRepeaterGUI:
         # Create input fields and labels
         self.intention_label = ttk.Label(master, text="Intention:")
         self.intention_label.grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        ToolTip(self.intention_label, "The intention to Repeat.")
+        ToolTip(self.intention_label, "The intention to repeat. Optional if file is specified.")
 
         self.intention_entry = tk.Text(master, width=75, height=5)
         self.intention_entry.grid(row=0, column=1, columnspan=3, padx=5, pady=5, sticky="w")
 
         self.file_label = ttk.Label(master, text="Intention File:")
         self.file_label.grid(row=1, column=0, padx=5, pady=5, sticky="e")
-        ToolTip(self.file_label, text = "The File to Repeat. Will replace the intention with the contents of the file.")
+        ToolTip(self.file_label, text = "The file to repeat. Will work with the intention. Optional.")
         self.file_entry = ttk.Entry(master, width=55)
         self.file_entry.grid(row=1, column=1, columnspan=2, padx=5, pady=5, sticky="w")
         self.file_button = ttk.Button(master, text="Browse", command=self.browse_file)
@@ -68,7 +68,7 @@ class IntentionRepeaterGUI:
 
         self.ram_label = ttk.Label(master, text="RAM Usage (GB):")
         self.ram_label.grid(row=3, column=0, padx=5, pady=5, sticky="e")
-        ToolTip(self.ram_label, text = "The amount of RAM to use while repeating the intention.")
+        ToolTip(self.ram_label, text = "The amount of RAM to use while repeating the intention. Use 0 to disable Intention Multiplying.")
         self.ram_entry = ttk.Entry(master, width=11)
         self.ram_entry.insert(0, "1.0")
         self.ram_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
