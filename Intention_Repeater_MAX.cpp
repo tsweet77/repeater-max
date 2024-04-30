@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.24 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.25 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -383,7 +383,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.24 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.25 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -407,8 +407,9 @@ Optional Flags:
  o) --restfor or -r
  p) --compress or -x
  q) --hashing or -g
- r) --file or -l
- s) --help or -h or /?
+ r) --file
+ s) --file2
+ t) --help or -h or /?
 
 --dur = Duration in HH:MM:SS format. Default = Run until stopped manually.
 --imem = Specify how many GB of System RAM to use. Higher amount repeats faster, but takes longer to load. Default = 1.0.
@@ -428,7 +429,8 @@ Optional Flags:
 --restfor = # of Seconds to rest for each rest period.
 --compress = Use compression Default n.
 --hashing = Use hashing. Default n.
---file = Specify file to use if applicable. Will override intention.
+--file = Specify file to use if applicable.
+--file2 = Specify file to use if applicable.
 --help = Display this help.
 
 Example usage:
@@ -697,10 +699,10 @@ int main(int argc, char **argv)
 {
     std::string intention, process_intention, intention_value, duration, param_duration;
     std::string param_intention, param_intention_2, param_timer, param_boostlevel, param_freq, param_color;
-    std::string param_usehololink, param_amplification, runtime_formatted, ref_rate, file_contents="";
+    std::string param_usehololink, param_amplification, runtime_formatted, ref_rate;
     std::string suffix_value = "HZ", HSUPLINK_FILE, param_restevery, param_restfor;
-    std::string param_compress, param_hashing, useHashing, useCompression, intention_hashed;
-    std::string totalIterations = "0", totalFreq = "0", param_file = "X", intention_display = "", loading_message="LOADING INTO MEMORY...";
+    std::string param_compress, param_hashing, useHashing, useCompression, intention_hashed, param_file2;
+    std::string totalIterations = "0", totalFreq = "0", param_file, intention_display = "", loading_message="LOADING INTO MEMORY...";
     unsigned long long int multiplier = 0, amplification_int = 1000000000;
     unsigned long long int cpu_benchmark_count = 0, hashMultiplier = 0, freq = 0;
     int seconds = 0, frequency_int = 0, restevery_int = 0, restfor_int = 0;
@@ -719,6 +721,8 @@ int main(int argc, char **argv)
     param_restfor = "0";
     param_hashing = "X";
     param_compress = "X";
+    param_file = "X";
+    param_file2 = "X";
     HSUPLINK_FILE = "HSUPLINK.TXT";
 
     for (int i = 1; i < argc; i++)
@@ -808,9 +812,13 @@ int main(int argc, char **argv)
             param_compress = argv[i + 1];
             std::transform(param_compress.begin(), param_compress.end(), param_compress.begin(), ::toupper);
         }
-        else if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--file"))
+        else if (!strcmp(argv[i], "--file"))
         {
             param_file = argv[i + 1];
+        }
+        else if (!strcmp(argv[i], "--file2"))
+        {
+            param_file2 = argv[i + 1];
         }
     }
 
@@ -916,32 +924,27 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.24 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX v5.25 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
-    if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
-    {
-        // Open param_intent file and read the full file contents into intention
-        readFileContents(param_file, file_contents);
-        intention_display = "Contents of: " + param_file;
-    }
-    
+    std::string file_contents_original, file_contents, file_contents2_original, file_contents2, intention_original;
+
     if (param_boostlevel == "0" && param_usehololink == "NO")
     {
-        if (param_intention == "X")
+        if (param_intention == "X" && param_file == "X" && param_file2 == "X")
         {
             while (!interrupted)
             {
                 std::cout << "Enter your Intention: ";
-                if (!std::getline(std::cin, intention))
+                if (!std::getline(std::cin, intention_original))
                 {
                     // If getline fails (e.g., due to an interrupt), break out of the loop immediately
                     interrupted.store(true); // Ensure the flag is set if not already
                     return 0;
                 }
 
-                if (!intention.empty())
+                if (!intention_original.empty())
                 {
                     break; // Successfully got an intention, exit the loop
                 }
@@ -951,28 +954,67 @@ int main(int argc, char **argv)
                     std::cout << "The intention cannot be empty. Please try again.\n";
                 }
             }
-            intention_display = intention;
-            intention_value = intention;
+            //intention_value = intention_original;
         }
         else
         {
-            intention = param_intention;
-            intention_value = intention;
-            intention_display = param_intention;
+            if (param_intention != "X") {
+                intention_original = param_intention;
+            }
+            //intention_value = param_intention;
+            intention_display = intention_original;
         }
     }
 
     if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
-        //std::cout << "intention.length(): " << intention.length() << " file_contents.length(): " << file_contents.length() << "intention_value: " << intention_value << std::endl;
-        // Keep adding intention_value onto intention until its length is >= length of file_contents
-        while (intention.length() < file_contents.length())
-        {
-            intention += intention_value;
-        }
-        intention += file_contents;
-        intention_display += " (" + param_file + ")";
+        // Open param_intent file and read the full file contents into intention
+        readFileContents(param_file, file_contents_original);
+        //intention_display += "Contents of: ";
     }
+    if (param_file2 != "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    {
+        // Open param_intent file and read the full file contents into intention
+        readFileContents(param_file2, file_contents2_original);
+        //intention_display = "Contents of: ";
+    }
+
+    size_t length1 = file_contents_original.size();
+    size_t length2 = file_contents2_original.size();
+    size_t length3 = intention_original.size();
+
+    size_t max_length = (std::max)({length1, length2, length3});
+
+    if (intention_original != "" && intention_original != "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    {
+        // Normalize intention
+        while (intention.length() < max_length)
+        {
+            intention += intention_original;
+        }
+        intention_display = intention_original;
+    }
+
+    if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    {
+        // Normalize file_contents
+        while (file_contents.length() < max_length)
+        {
+            file_contents += file_contents_original;
+        }
+        intention_display += "(" + param_file + ")";
+    }
+    if (param_file2 != "X" && param_boostlevel == "0" && param_usehololink == "NO")
+    {
+        // Normalize file_contents2
+        while (file_contents2.length() < max_length)
+        {
+            file_contents2 += file_contents2_original;
+        }
+        intention_display += "(" + param_file2 + ")";
+    }
+
+    intention += file_contents + file_contents2;
 
     if (frequency_int == 0)
     {
@@ -985,7 +1027,7 @@ int main(int argc, char **argv)
                 intention_value += intention;
                 ++multiplier;
             }
-            --multiplier; // Account for having to reduce at the end.
+            //--multiplier; // Account for having to reduce at the end.
 
             long long int intention_value_length = intention_value.length();
             long long int intention_length = intention.length();
