@@ -294,7 +294,7 @@ class IntentionRepeaterGUI:
             self.process = subprocess.Popen(command_str)
             self.run_button.config(state=tk.DISABLED)
         except FileNotFoundError:
-            messagebox.showerror(ERROR_TXT, "{IRM} not found.")
+            messagebox.showerror(ERROR_TXT, IRM + " not found.")
     
     def quit_program(self):
         if self.process:
@@ -312,13 +312,13 @@ class IntentionRepeaterGUI:
         try:
             subprocess.run([IRM, "--createhololinkfiles"])
         except FileNotFoundError:
-            messagebox.showerror(ERROR_TXT, "{IRM} not found.")
+            messagebox.showerror(ERROR_TXT, IRM + " not found.")
 
     def create_nesting_files(self):
         try:
             subprocess.run([IRM, "--createnestingfiles"])
         except FileNotFoundError:
-            messagebox.showerror(ERROR_TXT, "{IRM} not found.")
+            messagebox.showerror(ERROR_TXT, IRM + " not found.")
 
     def on_close(self):
         if self.process:

@@ -1,5 +1,5 @@
 /*
-    Intention Repeater MAX v5.25 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX v5.26 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
@@ -383,7 +383,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX v5.25 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX v5.26 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -924,7 +924,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX v5.25 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX v5.26 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
@@ -960,10 +960,15 @@ int main(int argc, char **argv)
         {
             if (param_intention != "X") {
                 intention_original = param_intention;
+                intention = intention_original;
             }
             //intention_value = param_intention;
             intention_display = intention_original;
         }
+    }
+
+    if (!intention_original.empty()) {
+        intention = intention_original;
     }
 
     if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
@@ -988,7 +993,7 @@ int main(int argc, char **argv)
     if (intention_original != "" && intention_original != "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
         // Normalize intention
-        while (intention.length() < max_length)
+        while ((intention.length() + length3) < max_length)
         {
             intention += intention_original;
         }
@@ -998,7 +1003,7 @@ int main(int argc, char **argv)
     if (param_file != "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
         // Normalize file_contents
-        while (file_contents.length() < max_length)
+        while ((file_contents.length() + length1) < max_length)
         {
             file_contents += file_contents_original;
         }
@@ -1007,7 +1012,7 @@ int main(int argc, char **argv)
     if (param_file2 != "X" && param_boostlevel == "0" && param_usehololink == "NO")
     {
         // Normalize file_contents2
-        while (file_contents2.length() < max_length)
+        while ((file_contents2.length() + length2) < max_length)
         {
             file_contents2 += file_contents2_original;
         }
