@@ -1,5 +1,11 @@
 # Intention Repeater Max
 
+intention_repeater.py is the newest addition to the Intention Repeater family.
+It is the strongest Repeater to date. It allows you to run intentions at low frequencies,
+such as 3Hz. This has been found to be more powerful than high speed PHz intentions.
+It also allows for the use of Intention Multiplying with the Frequency; something that
+the Intention Repeater MAX and CUDA can't do.
+
 For help: intention_repeater_max.exe --help
 
 Written in C++, this is the successor to the original Intention Repeater, written in Python.
