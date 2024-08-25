@@ -79,7 +79,10 @@ def intention_repeater(intention, file1, file2, frequency, runtime, log_file, us
 
     try:
         while True:
-            process_intention = new_intention2
+            if use_hashing:
+                new_intention2 = hashlib.sha256(new_intention2.encode()).hexdigest()
+            else:
+                process_intention = new_intention2
             iterations += 1
             cycle_iterations += 1
 
@@ -157,8 +160,6 @@ def get_user_input(args):
     return args
 
 def main():
-    print("Intention Repeater Python v1.1 by Anthro Teacher")
-    print("www.intentionrepeater.com")
     parser = argparse.ArgumentParser(description="Intention Repeater")
     parser.add_argument("--intent", help="Intention to repeat")
     parser.add_argument("--file", help="Path to the first file (use 'none' for no file)")
