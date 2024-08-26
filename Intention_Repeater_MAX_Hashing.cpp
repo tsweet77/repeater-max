@@ -1,9 +1,9 @@
 /*
-    Intention Repeater MAX Hashing v1.1 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+    Intention Repeater MAX Hashing v1.2 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
     Enhancement and flags by Karteek Sheri.
     Holo-Link framework created by Mystic Minds. This implementation by Anthro Teacher.
     Boosting through Nested Files by Anthro Teacher.
-    Updated 3/29/2024 by Anthro Teacher and Claude 3 Opus.
+    Updated 8/26/2024 by Anthro Teacher and Claude 3 Opus.
     To compile: g++ -O3 -Wall -static Intention_Repeater_MAX_Hashing.cpp -o Intention_Repeater_MAX_Hashing.exe -lz
     Repeats your intention up to 100 PHz to make things happen.
     For help: Intention_Repeater_MAX.exe --help
@@ -382,7 +382,7 @@ void create_nesting_files()
 void print_help()
 {
     const std::string helpText = R"(
-Intention Repeater MAX Hashing v1.1 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
+Intention Repeater MAX Hashing v1.2 (c)2020-2024 by Anthro Teacher aka Thomas Sweet.
 This utility repeats your intention millions of times per second, in computer memory, to aid in manifestation.
 Performance benchmark, exponents and flags by Karteek Sheri.
 Holo-Link framework by Mystic Minds. This implementation by Anthro Teacher.
@@ -923,7 +923,7 @@ int main(int argc, char **argv)
     std::locale comma_locale(std::locale(), new comma_numpunct());
     std::cout.imbue(comma_locale);
 
-    std::cout << "Intention Repeater MAX Hashing v1.1 (c)2020-2024" << std::endl;
+    std::cout << "Intention Repeater MAX Hashing v1.2 (c)2020-2024" << std::endl;
     std::cout << "by Anthro Teacher aka Thomas Sweet." << std::endl
               << std::endl;
 
@@ -1166,7 +1166,7 @@ int main(int argc, char **argv)
                 while ((std::chrono::duration_cast<std::chrono::seconds>(end - start).count() < 1))
                 {
                     process_intention = intention_value;
-                    intention_hashed = picosha2::hash256_hex_string(intention_hashed);
+                    intention_hashed = picosha2::hash256_hex_string(intention_hashed + ": " + intention_value);
                     freq++;
                     end = std::chrono::high_resolution_clock::now();
                 }
@@ -1240,7 +1240,7 @@ int main(int argc, char **argv)
             while ((std::chrono::duration_cast<std::chrono::seconds>(b_end - b_start).count() < 1))
             {
                 process_intention = intention_value;
-                intention_hashed = picosha2::hash256_hex_string(intention_hashed);
+                intention_hashed = picosha2::hash256_hex_string(intention_hashed + ": " + intention_value);
                 cpu_benchmark_count++;
                 b_end = std::chrono::high_resolution_clock::now();
             }
@@ -1259,7 +1259,7 @@ int main(int argc, char **argv)
                     for (unsigned long long int i = 0; i < amplification_int; i++)
                     {
                         process_intention = intention_value;
-                        intention_hashed = picosha2::hash256_hex_string(intention_hashed);
+                        intention_hashed = picosha2::hash256_hex_string(intention_hashed + ": " + intention_value);
                     }
 
                     freq += amplification_int;
@@ -1348,7 +1348,7 @@ int main(int argc, char **argv)
 
                 if (duration.count() >= target_interval) {
                     process_intention = intention_value;
-                    intention_hashed = picosha2::hash256_hex_string(intention_hashed);
+                    intention_hashed = picosha2::hash256_hex_string(intention_hashed + ": " + intention_value);
                     freq += 1;
                     start2 = now;
 
