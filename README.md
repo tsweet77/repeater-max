@@ -1,5 +1,11 @@
 # Intention Repeater Max
 
+The Intention Repeater MAX is outdated. See the ServitorConnect: https://github.com/tsweet77/servitor-connect
+
+or the Intention Repeater Android: https://github.com/tsweet77/intention-repeater-android
+
+
+
 intention_repeater.py is the newest addition to the Intention Repeater family.
 It is the strongest Repeater to date. It allows you to run intentions at low frequencies,
 such as 3Hz. This has been found to be more powerful than high speed PHz intentions.
